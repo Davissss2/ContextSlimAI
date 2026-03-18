@@ -149,6 +149,34 @@ function getStackPatterns(stack: StackInfo): string[] {
   return patterns;
 }
 
+function getGitAttributesPatterns(stack: StackInfo): string[] {
+  const patterns = [
+    '# ===== ContextSlim Auto-Generated =====',
+    '# Ignore these files in GitHub PR diffs & repo language stats',
+    'package-lock.json linguist-generated=true',
+    'yarn.lock linguist-generated=true',
+    'pnpm-lock.yaml linguist-generated=true',
+    'dist/** linguist-generated=true',
+    'build/** linguist-generated=true',
+    '.next/** linguist-generated=true',
+    '.nuxt/** linguist-generated=true',
+    'out/** linguist-generated=true',
+  ];
+
+  if (stack.language === 'Go') {
+    patterns.push('go.sum linguist-generated=true');
+    patterns.push('vendor/** linguist-generated=true');
+  } else if (stack.language === 'Java') {
+    patterns.push('gradlew linguist-generated=true');
+    patterns.push('gradlew.bat linguist-generated=true');
+  } else if (stack.language === 'PHP') {
+    patterns.push('composer.lock linguist-generated=true');
+  }
+
+  patterns.push('# ===== End ContextSlim =====');
+  return patterns;
+}
+
 export async function generateIgnoreFiles(
   dir: string,
   stack: StackInfo,
@@ -164,6 +192,11 @@ export async function generateIgnoreFiles(
     await writeFile(filePath, content, 'utf-8');
     createdFiles.push(fileName);
   }
+
+  // Generate .gitattributes
+  const gitattrPatterns = getGitAttributesPatterns(stack);
+  await writeFile(join(dir, '.gitattributes'), gitattrPatterns.join('\n') + '\n', 'utf-8');
+  createdFiles.push('.gitattributes');
 
   return createdFiles;
 }

@@ -32,7 +32,8 @@ export async function doctorCommand(): Promise<void> {
     '.cursorignore',
     '.cursorrules',
     '.agents/workflows/coding_guidelines.md',
-    '.github/copilot-instructions.md'
+    '.github/copilot-instructions.md',
+    '.gitattributes'
   ];
 
   const results: { name: string; exists: boolean }[] = [];

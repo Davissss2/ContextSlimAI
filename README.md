@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="ContextSlim Banner" width="100%" />
+  <img src="assets/banner.svg" alt="ContextSlim Banner" width="500" />
 </p>
 
 <h1 align="center">ContextSlim</h1>
@@ -49,6 +49,7 @@ ContextSlim analyzes your project, detects the stack (Node, Python, Rust, React,
 | `.cursorrules` | AI behavior rules optimized for Cursor AI |
 | `.agents/workflows/coding_guidelines.md` | Workflows and context rules for Antigravity |
 | `.github/copilot-instructions.md` | Specific instructions for GitHub Copilot |
+| `.gitattributes` | Prevents large auto-generated files from cluttering GitHub PRs |
 
 > **Result:** Up to **60-80% fewer tokens** per interaction. Faster, cheaper, smarter AI assistance.
 
@@ -119,6 +120,7 @@ your-project/
 ├── .antigravityignore               # Context blockers for Antigravity
 ├── .cursorignore                    # Context blockers for Cursor
 ├── .cursorrules                     # Rules for Cursor AI behavior
+├── .gitattributes                   # Mark heavy files to be ignored by Github AI PR reviewers
 ├── .github/
 │   └── copilot-instructions.md      # Rules for Copilot
 └── .agents/
