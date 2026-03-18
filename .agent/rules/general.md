@@ -31,6 +31,7 @@ contextslim/
 │   │   ├── project-context.ts
 │   │   └── stack-detector.ts
 │   ├── commands/
+│   │   ├── brief.ts
 │   │   ├── cat.ts
 │   │   ├── doctor.ts
 │   │   ├── grep.ts

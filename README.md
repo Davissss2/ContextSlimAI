@@ -12,7 +12,7 @@
   <a href="#installation"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square&logo=node.js" alt="Node Version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
   <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="PRs Welcome" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/version-1.1.0-purple?style=flat-square" alt="Version" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/version-1.3.0-purple?style=flat-square" alt="Version" /></a>
 </p>
 
 <p align="center">
@@ -27,8 +27,8 @@ When an AI assistant explores your project, a single careless command can burn t
 
 ### **How much do you save?**
 - 📉 **90% Token Reduction** when scanning code structures using `contextslim map` instead of reading full files.
-- 📉 **80% Token Reduction** when searching files using `contextslim grep` (caps matches to 5 per file vs dumping 500+ lines of logs).
-- 📉 **60% Token Reduction** by auto-generating `.gitattributes` to intentionally hide heavy build files from GitHub's AI PR-reviewers and Copilot.
+- 📉 **80% Token Reduction** when searching files using `contextslim grep` (caps matches to 5 per file vs dumping 500+ lines).
+- 📉 **60% Token Reduction** by auto-generating `.gitattributes` to hide heavy build files from GitHub AI PR-reviewers.
 - 📉 **100% Protection** against fatal context overflows caused by an AI running `cat package-lock.json` or `ls` on `node_modules`.
 
 ---
@@ -47,10 +47,10 @@ AI-powered IDEs send **massive amounts of context** to LLMs on every interaction
 **One command. Instant optimization.**
 
 ```bash
-contextslim init
+npx contextslim init
 ```
 
-ContextSlim analyzes your project, detects the stack (Node, Python, Rust, React, Next.js, etc.), and auto-generates:
+ContextSlim analyzes your project, detects the stack, and auto-generates:
 
 | File | Purpose |
 |---|---|
@@ -58,7 +58,8 @@ ContextSlim analyzes your project, detects the stack (Node, Python, Rust, React,
 | `.cursorignore` | Exclude heavy dirs from Cursor context |
 | `.cursorrules` | AI behavior rules optimized for Cursor AI |
 | `CLAUDE.md` | Context configuration for Claude Code |
-| `.agents/rules.md` | Native rules indexing for Antigravity agents |
+| `.agent/rules/general.md` | **Local** project-specific context for Antigravity (stack, entry points, structure) |
+| `~/.gemini/antigravity/global_workflows/contextslim_rules.md` | **Global** ContextSlim command guide for Antigravity |
 | `.github/copilot-instructions.md` | Specific instructions for GitHub Copilot |
 | `.gitattributes` | Prevents large auto-generated files from cluttering GitHub PRs |
 
@@ -72,94 +73,168 @@ ContextSlim analyzes your project, detects the stack (Node, Python, Rust, React,
 # Install globally
 npm install -g contextslim
 
-# Or use directly with npx
+# Or use directly with npx (no install needed)
 npx contextslim init
 ```
 
 ### Requirements
-
 - Node.js **≥ 18.0.0**
 
 ---
 
-## 📖 Features & Commands
+## 📖 Commands
 
-### 1. `init` - The Core Optimizer
-Navigate to your project root and run to generate exclusion rules and AI guidelines tailored specifically to your framework and language.
+### `init` — The Core Optimizer
+
+Detects your project stack, generates exclusion rules, AI behavior guidelines, and project-specific context files.
 
 ```bash
-cd your-project
-contextslim init
+npx contextslim init
 ```
 
-### 2. `scan` - The Token Waste Estimator
-Find out how much context noise you currently have. `scan` deeply checks your directories and calculates how many MegaBytes (and estimated tokens) are being wasted by not ignoring heavy folders.
+**Generates:**
+- **Global rules** (Antigravity): how to use ContextSlim commands, safe editing, progressive context, file type strategies
+- **Local rules** (`.agent/rules/general.md`): detected stack, entry points, mini-tree of your project, coding conventions
+- Ignore files for Antigravity, Cursor, Copilot, Claude
+
+### `brief` — The Project Summary ⭐ NEW
+
+Generates a ~300-token project summary you can **copy and paste into any AI conversation** for instant context.
 
 ```bash
-contextslim scan
+npx contextslim brief
 ```
 
-### 3. `doctor` - The Health Checker
-Verifies that all context-slimming files are present and properly configured.
+**Example output:**
+```
+Project: my-api
+Stack: Node.js + TypeScript (Express)
+Language: TypeScript (TypeScript)
+Frameworks: Express
+Entry points: src/index.ts (Main entry), src/app.ts (Express app)
 
-```bash
-contextslim doctor
+Structure:
+  src/
+  ├── controllers/
+  ├── models/
+  ├── routes/
+Config files: package.json, tsconfig.json
 ```
 
-### 4. `ls` - The AI-Optimized Directory Listing
-Lists files like `ls` o `dir`, but strictly hides noisy directories.
+This gives any AI 80% understanding of your project in ~70 tokens instead of 5,000.
+
+### `tree` — AI-Optimized Project Structure
+
+Clean directory tree that auto-hides noisy folders (`node_modules`, `dist`, `.git`, etc).
 
 ```bash
-contextslim ls [target-dir]
+npx contextslim tree [dir] [maxDepth]
+npx contextslim tree . 2    # depth 2, current dir
 ```
 
-### 5. `tree` - The AI-Optimized Project Mapper
-An intelligent `tree` command that stops at an AI-safe depth (default 3) and ignores irrelevant heavy folders like `.git` or `dist`.
+### `map` — Zero-Token Skeleton Reader
+
+Extracts only function, class, interface, and type signatures. A 2,000-line file becomes a 20-line structural summary.
 
 ```bash
-contextslim tree [target-dir] [maxDepth]
+npx contextslim map <file>
+npx contextslim map src/index.ts
 ```
 
-### 6. `cat` - The AI-Optimized File Reader
-Reads a file but violently optimizes it. It drops empty lines to pack context, and if a file exceeds 150 lines, it snips out the middle.
+### `cat` — Optimized File Reader
+
+Reads a file, strips blank lines, and if it exceeds 150 lines, shows first 75 + last 75 with a truncation notice.
 
 ```bash
-contextslim cat <target-file>
+npx contextslim cat <file>
 ```
 
-### 7. `grep` - The AI-Optimized Searcher
-A lightweight `grep` killer explicitly built for AI. Automatically ignores massive directories like `node_modules` or `dist` and strictly caps results to just 5 matches per file so your AI doesn't burn out its memory reading thousands of log occurrences.
+> ⚠️ **Never use `cat` before editing a file** — it may truncate content. Use `view_file` (native) instead.
+
+### `grep` — Optimized Search
+
+Searches across files, auto-skipping heavy directories. Max 5 matches per file, 50 total.
 
 ```bash
-contextslim grep <query> [target-dir]
+npx contextslim grep <query> [dir]
+npx contextslim grep "handleSubmit" src/
 ```
 
-### 8. `map` - The Zero-Token Skeleton Reader
-Want an AI to understand the structure of a file without reading the logic? `map` strips out everything except `export`, `function`, `class`, and `interface` signatures. What was a 2,000-line file becomes a 20-line structural summary.
+### `ls` — Optimized Directory Listing
+
+Lists files and folders, hiding heavy directories. Shows summary counts.
 
 ```bash
-contextslim map <target-file>
+npx contextslim ls [dir]
+```
+
+### `scan` — Token Waste Estimator
+
+Calculates how many MB and estimated tokens are wasted by unignored heavy folders.
+
+```bash
+npx contextslim scan
+```
+
+### `doctor` — Health Checker
+
+Verifies all context-optimization files are present and properly configured.
+
+```bash
+npx contextslim doctor
 ```
 
 ---
 
-## 🔍 Advanced Stack Detection
+## 🔍 Stack Detection
 
-ContextSlim automatically detects your project type and adds specific rules:
+ContextSlim auto-detects **20+ stacks and frameworks**:
 
-| Stack | Detection Signal | Auto-Added Rules |
+| Stack | Detection Signal | Framework Detection |
 |---|---|---|
-| **Node.js/TS** | `package.json` | ES Modules, async/await priorities |
-| **Next.js** | Next.js Dependency | App Router patterns, `next/image` |
-| **React/Vue** | Framework Dep | Hooks, Composition API patterns |
-| **Python** | `requirements.txt` | PEP 8, pathlib, type hints |
-| **Rust** | `Cargo.toml` | Result<T, E>, unwrap minimization |
+| **Node.js / TypeScript** | `package.json`, `tsconfig.json` | Next.js, React, Vue, Nuxt, Svelte, Angular, NestJS, Express, Fastify, Hono, Koa, Remix, Astro, SolidJS, Electron, Tauri |
+| **Python** | `requirements.txt`, `pyproject.toml`, `Pipfile` | Django, FastAPI, Flask, Streamlit |
+| **PHP** | `composer.json` | Laravel, Symfony, WordPress |
+| **Ruby** | `Gemfile` | Rails |
+| **Rust** | `Cargo.toml` | — |
+| **Go** | `go.mod` | — |
+| **Java** | `pom.xml`, `build.gradle` | — |
+| **Kotlin** | `build.gradle.kts` | Android |
+| **C# / .NET** | `Program.cs`, `*.csproj` | ASP.NET, Razor Pages |
+| **Flutter / Dart** | `pubspec.yaml` | — |
+| **Swift / iOS** | `Package.swift` | — |
+| **Terraform** | `main.tf` | — |
+| **Docker** | `Dockerfile`, `docker-compose.yml` | — |
 
 ---
 
-## 📂 Generated Files Breakdown
+## 🧠 AI Rules System
 
-### Output Structure
+ContextSlim generates a **two-layer rules system** for Antigravity:
+
+### Global Rules (`~/.gemini/antigravity/global_workflows/contextslim_rules.md`)
+Teaches the AI **how to use ContextSlim** and best practices:
+
+- **Progressive Context** — Always escalate: `tree` → `map` → `view_file` (specific lines) → `view_file` (full)
+- **Safe Editing** — Always `view_file` before editing. Never edit based on truncated `cat` output
+- **File Handling Strategy** — Which tool to use per file type
+- **When NOT to Use ContextSlim** — Small files, before editing, git diffs, config files
+- **NEVER Rules** — node_modules, lockfiles, .env, auto-generated files
+- **Smart Search** — Check tree/conventions before searching
+- **Efficiency** — Don't repeat commands, group reads, keep responses lean
+- **Error Recovery** — Fallback to native tools when ContextSlim fails
+
+### Local Rules (`.agent/rules/general.md`)
+Gives the AI **project-specific context**:
+
+- **Stack** detected (e.g., "Node.js + TypeScript (Express)")
+- **Entry points** auto-detected (e.g., `src/index.ts — Main entry`)
+- **Mini-tree** of the project structure embedded
+- **Coding conventions** for the detected language (ESM, TypeScript types, framework patterns)
+
+---
+
+## 📂 Generated Files
 
 ```
 your-project/
@@ -167,12 +242,31 @@ your-project/
 ├── .cursorignore                    # Context blockers for Cursor
 ├── .cursorrules                     # Rules for Cursor AI behavior
 ├── CLAUDE.md                        # Claude Code rules
-├── .gitattributes                   # Mark heavy files to be ignored by Github AI PR reviewers
+├── .gitattributes                   # Hide heavy files from GitHub AI
+├── .agent/
+│   └── rules/
+│       └── general.md               # Local project context (stack, entry points, tree)
 ├── .github/
 │   └── copilot-instructions.md      # Rules for Copilot
-└── .agents/
-    └── rules.md                     # Native rules index for Antigravity
+└── ~/.gemini/antigravity/
+    └── global_workflows/
+        └── contextslim_rules.md     # Global ContextSlim command guide
 ```
+
+---
+
+## 🗺️ Roadmap
+
+Features planned for future releases:
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| `contextslim diff` | Show only changes since last commit — saves massive tokens for "fix this bug" flows | 🔜 Planned |
+| `contextslim deps <file>` | Dependency graph: what a file imports and what imports it | 🔜 Planned |
+| `contextslim stats` | Real metrics: measure actual token savings before/after | 🔜 Planned |
+| `.contextslimrc` | User config file: customize limits, select IDEs, add custom entry points | 🔜 Planned |
+| Monorepo support | Detect Turborepo/pnpm workspaces and generate context per package | 🔜 Planned |
+| `contextslim benchmark` | Compare token usage with/without ContextSlim on real workflows | 💡 Idea |
 
 ---
 
@@ -180,21 +274,26 @@ your-project/
 
 ```
 contextslim/
-├── assets/
-│   └── banner.png              # Banner asset
 ├── bin/
-│   └── contextslim.js          # CLI entry point
+│   └── contextslim.js            # CLI entry point
 ├── src/
-│   ├── index.ts                # Commander setup
+│   ├── index.ts                  # Commander setup (10 commands)
 │   ├── commands/
-│   │   ├── init.ts             # Orchestrator
-│   │   ├── scan.ts             # Waste estimator logic
-│   │   └── doctor.ts           # Health checks
+│   │   ├── init.ts               # Core: detect stack + generate all files
+│   │   ├── brief.ts              # NEW: ~300-token project summary
+│   │   ├── scan.ts               # Token waste estimator
+│   │   ├── doctor.ts             # Health checks
+│   │   ├── tree.ts               # AI-optimized directory tree
+│   │   ├── map.ts                # Zero-token skeleton reader
+│   │   ├── cat.ts                # Optimized file reader
+│   │   ├── grep.ts               # Optimized search
+│   │   └── ls.ts                 # Optimized directory listing
 │   ├── analyzers/
-│   │   └── stack-detector.ts   # Advanced framework detection
+│   │   ├── stack-detector.ts     # 20+ stack/framework detection
+│   │   └── project-context.ts    # Entry point + mini-tree generator
 │   └── generators/
-│       ├── ignore-generator.ts # Context excluders
-│       └── rules-generator.ts  # Workspace rules output
+│       ├── ignore-generator.ts   # Context excluders
+│       └── rules-generator.ts    # Global + local rules for all IDEs
 ├── package.json
 └── tsconfig.json
 ```
@@ -215,9 +314,11 @@ npm install
 
 # Build
 npm run build
-```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+# Test locally
+npx contextslim brief
+npx contextslim init
+```
 
 ---
 

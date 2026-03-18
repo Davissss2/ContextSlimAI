@@ -7,6 +7,7 @@ import { catCommand } from './commands/cat.js';
 import { grepCommand } from './commands/grep.js';
 import { mapCommand } from './commands/map.js';
 import { treeCommand } from './commands/tree.js';
+import { briefCommand } from './commands/brief.js';
 
 const program = new Command();
 
@@ -15,7 +16,7 @@ program
   .description(
     '⚡ CLI tool to optimize AI IDE token consumption — auto-generates exclusion files & AI rules',
   )
-  .version('1.2.0');
+  .version('1.3.0');
 
 program
   .command('init')
@@ -109,6 +110,18 @@ program
   .action(async (file) => {
     try {
       await mapCommand(file);
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('brief [dir]')
+  .description('Generate a ~300-token project summary to paste into any AI conversation')
+  .action(async (dir) => {
+    try {
+      await briefCommand(dir);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);

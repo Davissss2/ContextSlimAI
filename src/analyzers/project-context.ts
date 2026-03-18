@@ -27,6 +27,14 @@ const ENTRY_POINTS_BY_STACK: Record<string, EntryPointPattern[]> = {
     { paths: ['src/app/page.tsx', 'app/page.tsx'], label: 'Home page' },
     { paths: ['next.config.js', 'next.config.mjs', 'next.config.ts'], label: 'Next.js config' },
   ],
+  'Remix': [
+    { paths: ['app/root.tsx', 'app/root.jsx'], label: 'Root route' },
+    { paths: ['app/routes/_index.tsx', 'app/routes/index.tsx'], label: 'Index route' },
+  ],
+  'Astro': [
+    { paths: ['src/pages/index.astro'], label: 'Home page' },
+    { paths: ['astro.config.mjs', 'astro.config.ts'], label: 'Astro config' },
+  ],
   'React': [
     { paths: ['src/App.tsx', 'src/App.jsx', 'src/App.js'], label: 'App component' },
     { paths: ['src/main.tsx', 'src/main.jsx', 'src/index.tsx', 'src/index.jsx'], label: 'React entry' },
@@ -39,6 +47,11 @@ const ENTRY_POINTS_BY_STACK: Record<string, EntryPointPattern[]> = {
     { paths: ['app.vue'], label: 'App component' },
     { paths: ['nuxt.config.ts', 'nuxt.config.js'], label: 'Nuxt config' },
   ],
+  'Angular': [
+    { paths: ['src/app/app.component.ts'], label: 'Root component' },
+    { paths: ['src/main.ts'], label: 'Bootstrap entry' },
+    { paths: ['angular.json'], label: 'Angular config' },
+  ],
   'NestJS': [
     { paths: ['src/main.ts'], label: 'NestJS bootstrap' },
     { paths: ['src/app.module.ts'], label: 'Root module' },
@@ -48,6 +61,10 @@ const ENTRY_POINTS_BY_STACK: Record<string, EntryPointPattern[]> = {
     { paths: ['src/app.ts', 'src/app.js', 'app.ts', 'app.js'], label: 'Express app' },
     { paths: ['src/routes/index.ts', 'src/routes/index.js', 'routes/index.ts', 'routes/index.js'], label: 'Route index' },
   ],
+  'Fastify': [
+    { paths: ['src/app.ts', 'src/app.js', 'app.ts'], label: 'Fastify app' },
+    { paths: ['src/server.ts', 'src/server.js'], label: 'Server entry' },
+  ],
   'Svelte': [
     { paths: ['src/routes/+page.svelte', 'src/App.svelte'], label: 'Svelte entry' },
     { paths: ['svelte.config.js'], label: 'Svelte config' },
@@ -56,6 +73,17 @@ const ENTRY_POINTS_BY_STACK: Record<string, EntryPointPattern[]> = {
     { paths: ['main.py', 'app.py', 'src/main.py'], label: 'Main entry' },
     { paths: ['manage.py'], label: 'Django manager' },
     { paths: ['wsgi.py', 'asgi.py'], label: 'WSGI/ASGI entry' },
+  ],
+  'Django': [
+    { paths: ['manage.py'], label: 'Django manager' },
+    { paths: ['config/settings.py', 'settings.py'], label: 'Django settings' },
+    { paths: ['config/urls.py', 'urls.py'], label: 'URL config' },
+  ],
+  'FastAPI': [
+    { paths: ['main.py', 'app/main.py', 'src/main.py'], label: 'FastAPI app' },
+  ],
+  'Flask': [
+    { paths: ['app.py', 'wsgi.py', 'src/app.py'], label: 'Flask app' },
   ],
   'Rust': [
     { paths: ['src/main.rs'], label: 'Main entry' },
@@ -67,15 +95,52 @@ const ENTRY_POINTS_BY_STACK: Record<string, EntryPointPattern[]> = {
   'Java': [
     { paths: ['src/main/java'], label: 'Source root (explore with ls)' },
   ],
+  'Kotlin': [
+    { paths: ['src/main/kotlin'], label: 'Source root' },
+    { paths: ['app/src/main/java', 'app/src/main/kotlin'], label: 'Android source' },
+  ],
   'PHP': [
     { paths: ['public/index.php', 'index.php'], label: 'Public entry' },
     { paths: ['artisan'], label: 'Laravel artisan' },
     { paths: ['routes/web.php', 'routes/api.php'], label: 'Route definitions' },
   ],
+  'Laravel': [
+    { paths: ['artisan'], label: 'Artisan CLI' },
+    { paths: ['routes/web.php'], label: 'Web routes' },
+    { paths: ['routes/api.php'], label: 'API routes' },
+    { paths: ['app/Http/Kernel.php'], label: 'HTTP Kernel' },
+  ],
   'Ruby': [
     { paths: ['config/routes.rb'], label: 'Rails routes' },
     { paths: ['config/application.rb'], label: 'Rails app config' },
     { paths: ['app.rb', 'config.ru'], label: 'Rack/Sinatra entry' },
+  ],
+  'Rails': [
+    { paths: ['config/routes.rb'], label: 'Routes' },
+    { paths: ['config/application.rb'], label: 'App config' },
+    { paths: ['app/controllers/application_controller.rb'], label: 'Base controller' },
+  ],
+  'Flutter/Dart': [
+    { paths: ['lib/main.dart'], label: 'Flutter entry' },
+    { paths: ['pubspec.yaml'], label: 'Pub config' },
+  ],
+  '.NET': [
+    { paths: ['Program.cs'], label: 'Program entry' },
+    { paths: ['Startup.cs'], label: 'Startup config' },
+    { paths: ['appsettings.json'], label: 'App settings' },
+  ],
+  'Swift': [
+    { paths: ['Sources/main.swift', 'Sources/App/App.swift'], label: 'Swift entry' },
+    { paths: ['Package.swift'], label: 'Swift Package config' },
+  ],
+  'Terraform': [
+    { paths: ['main.tf'], label: 'Main config' },
+    { paths: ['variables.tf'], label: 'Variables' },
+    { paths: ['outputs.tf'], label: 'Outputs' },
+  ],
+  'Tauri': [
+    { paths: ['src-tauri/tauri.conf.json'], label: 'Tauri config' },
+    { paths: ['src-tauri/src/main.rs'], label: 'Tauri backend' },
   ],
 };
 
