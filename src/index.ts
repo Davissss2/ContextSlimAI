@@ -6,6 +6,7 @@ import { lsCommand } from './commands/ls.js';
 import { catCommand } from './commands/cat.js';
 import { grepCommand } from './commands/grep.js';
 import { mapCommand } from './commands/map.js';
+import { treeCommand } from './commands/tree.js';
 
 const program = new Command();
 
@@ -60,6 +61,18 @@ program
   .action(async (dir) => {
     try {
       await lsCommand(dir);
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('tree [dir] [maxDepth]')
+  .description('Generate an AI-optimized directory tree, hiding heavy folders and capping depth')
+  .action(async (dir, maxDepth) => {
+    try {
+      await treeCommand(dir, maxDepth);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);

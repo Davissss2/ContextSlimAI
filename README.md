@@ -113,21 +113,28 @@ Lists files like `ls` o `dir`, but strictly hides noisy directories.
 contextslim ls [target-dir]
 ```
 
-### 5. `cat` - The AI-Optimized File Reader
+### 5. `tree` - The AI-Optimized Project Mapper
+An intelligent `tree` command that stops at an AI-safe depth (default 3) and ignores irrelevant heavy folders like `.git` or `dist`.
+
+```bash
+contextslim tree [target-dir] [maxDepth]
+```
+
+### 6. `cat` - The AI-Optimized File Reader
 Reads a file but violently optimizes it. It drops empty lines to pack context, and if a file exceeds 150 lines, it snips out the middle.
 
 ```bash
 contextslim cat <target-file>
 ```
 
-### 6. `grep` - The AI-Optimized Searcher
+### 7. `grep` - The AI-Optimized Searcher
 A lightweight `grep` killer explicitly built for AI. Automatically ignores massive directories like `node_modules` or `dist` and strictly caps results to just 5 matches per file so your AI doesn't burn out its memory reading thousands of log occurrences.
 
 ```bash
 contextslim grep <query> [target-dir]
 ```
 
-### 7. `map` - The Zero-Token Skeleton Reader
+### 8. `map` - The Zero-Token Skeleton Reader
 Want an AI to understand the structure of a file without reading the logic? `map` strips out everything except `export`, `function`, `class`, and `interface` signatures. What was a 2,000-line file becomes a 20-line structural summary.
 
 ```bash
