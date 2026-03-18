@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="ContextSlim Logo" width="180" />
+  <img src="assets/banner.png" alt="ContextSlim Banner" width="100%" />
 </p>
 
 <h1 align="center">ContextSlim</h1>
@@ -12,11 +12,11 @@
   <a href="#installation"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square&logo=node.js" alt="Node Version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
   <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="PRs Welcome" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/version-1.0.0-purple?style=flat-square" alt="Version" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/version-1.1.0-purple?style=flat-square" alt="Version" /></a>
 </p>
 
 <p align="center">
-  CLI tool that automatically detects your project stack and generates optimized ignore files & AI rules to <b>drastically reduce token consumption</b> in AI-powered IDEs like Antigravity, Cursor, and Claude Code.
+  CLI tool that automatically detects your project stack and generates optimized ignore files & AI rules to <b>drastically reduce token consumption</b> in AI-powered IDEs like Antigravity, Cursor, GitHub Copilot, and Claude Code.
 </p>
 
 <br />
@@ -40,14 +40,15 @@ AI-powered IDEs send **massive amounts of context** to LLMs on every interaction
 contextslim init
 ```
 
-ContextSlim analyzes your project, detects the stack (Node, Python, Rust, etc.), and auto-generates:
+ContextSlim analyzes your project, detects the stack (Node, Python, Rust, React, Next.js, etc.), and auto-generates:
 
 | File | Purpose |
 |---|---|
 | `.antigravityignore` | Exclude heavy dirs from Antigravity context |
 | `.cursorignore` | Exclude heavy dirs from Cursor context |
-| `GEMINI.md` | AI behavior rules optimized for your stack |
-| `AGENTS.md` | Agent-specific instructions & conventions |
+| `.cursorrules` | AI behavior rules optimized for Cursor AI |
+| `.agents/workflows/coding_guidelines.md` | Workflows and context rules for Antigravity |
+| `.github/copilot-instructions.md` | Specific instructions for GitHub Copilot |
 
 > **Result:** Up to **60-80% fewer tokens** per interaction. Faster, cheaper, smarter AI assistance.
 
@@ -69,95 +70,64 @@ npx contextslim init
 
 ---
 
-## 📖 Usage
+## 📖 Features & Commands
 
-### `contextslim init`
-
-Navigate to your project root and run:
+### 1. `init` - The Core Optimizer
+Navigate to your project root and run to generate exclusion rules and AI guidelines tailored specifically to your framework and language.
 
 ```bash
 cd your-project
 contextslim init
 ```
 
-**What happens:**
+### 2. `scan` - The Token Waste Estimator
+Find out how much context noise you currently have. `scan` deeply checks your directories and calculates how many MegaBytes (and estimated tokens) are being wasted by not ignoring heavy folders.
 
+```bash
+contextslim scan
 ```
-  🔍 Detecting project stack...
-  ✔ Detected: Node.js + TypeScript
 
-  📁 Generating exclusion files...
-  ✔ Created .antigravityignore
-  ✔ Created .cursorignore
+### 3. `doctor` - The Health Checker
+Verifies that all context-slimming files are present and properly configured.
 
-  📝 Generating AI rules...
-  ✔ Created GEMINI.md
-  ✔ Created AGENTS.md
-
-  🎉 Done! Your project is now optimized for AI IDEs.
-     Estimated token savings: ~70%
+```bash
+contextslim doctor
 ```
 
 ---
 
-## 🔍 Stack Detection
+## 🔍 Advanced Stack Detection
 
-ContextSlim automatically detects your project type:
+ContextSlim automatically detects your project type and adds specific rules:
 
-| Stack | Detection Signal |
-|---|---|
-| **Node.js** | `package.json` |
-| **TypeScript** | `package.json` + `tsconfig.json` |
-| **Python** | `requirements.txt` or `pyproject.toml` |
-| **Rust** | `Cargo.toml` |
-| **Unknown** | Falls back to generic optimizations |
+| Stack | Detection Signal | Auto-Added Rules |
+|---|---|---|
+| **Node.js/TS** | `package.json` | ES Modules, async/await priorities |
+| **Next.js** | Next.js Dependency | App Router patterns, `next/image` |
+| **React/Vue** | Framework Dep | Hooks, Composition API patterns |
+| **Python** | `requirements.txt` | PEP 8, pathlib, type hints |
+| **Rust** | `Cargo.toml` | Result<T, E>, unwrap minimization |
 
 ---
 
-## 📂 Generated Files
+## 📂 Generated Files Breakdown
 
-### `.antigravityignore` / `.cursorignore`
+### Output Structure
 
-Exclusion patterns tailored to your stack:
-
-```gitignore
-# Dependencies
-node_modules/
-.pnp.*
-
-# Build outputs  
-dist/
-build/
-.next/
-out/
-
-# Environment & secrets
-.env*
-*.pem
-
-# Heavy assets
-*.mp4
-*.zip
-*.tar.gz
-
-# Logs & caches
-*.log
-.cache/
+```
+your-project/
+├── .antigravityignore               # Context blockers for Antigravity
+├── .cursorignore                    # Context blockers for Cursor
+├── .cursorrules                     # Rules for Cursor AI behavior
+├── .github/
+│   └── copilot-instructions.md      # Rules for Copilot
+└── .agents/
+    └── workflows/
+        └── coding_guidelines.md     # Automated workflow logic for Antigravity
 ```
 
-### `GEMINI.md` / `AGENTS.md`
-
-AI rules optimized for your stack. Example for a TypeScript project:
-
-```markdown
-# Project Rules
-
-- Use TypeScript with strict mode
-- Prefer ES Modules (import/export)
-- Be concise — don't repeat existing code
-- Use existing project patterns and conventions
-- Keep functions small and focused
-```
+### Wait, why `.agents/workflows/` for Antigravity?
+Antigravity uses a robust agent-based context system. A dedicated Markdown file with YAML frontmatter ensures it understands exactly how to read and write your project token-efficiently.
 
 ---
 
@@ -165,31 +135,24 @@ AI rules optimized for your stack. Example for a TypeScript project:
 
 ```
 contextslim/
+├── assets/
+│   └── banner.png              # Banner asset
 ├── bin/
 │   └── contextslim.js          # CLI entry point
 ├── src/
 │   ├── index.ts                # Commander setup
 │   ├── commands/
-│   │   └── init.ts             # Init command orchestrator
+│   │   ├── init.ts             # Orchestrator
+│   │   ├── scan.ts             # Waste estimator logic
+│   │   └── doctor.ts           # Health checks
 │   ├── analyzers/
-│   │   └── stack-detector.ts   # Stack detection engine
+│   │   └── stack-detector.ts   # Advanced framework detection
 │   └── generators/
-│       ├── ignore-generator.ts # .antigravityignore & .cursorignore
-│       └── rules-generator.ts  # GEMINI.md & AGENTS.md
+│       ├── ignore-generator.ts # Context excluders
+│       └── rules-generator.ts  # Workspace rules output
 ├── package.json
 └── tsconfig.json
 ```
-
----
-
-## 🗺️ Roadmap
-
-- [x] **v1.0** — `contextslim init` (auto-detect + generate)
-- [ ] **v1.1** — `contextslim scan` (analyze current token waste)
-- [ ] **v1.2** — `contextslim doctor` (validate & fix existing configs)
-- [ ] **v2.0** — Plugin system for custom stacks & rules
-- [ ] **v2.1** — Monorepo support (Turborepo, Nx, Lerna)
-- [ ] **v3.0** — VS Code / Cursor extension
 
 ---
 
@@ -199,7 +162,7 @@ Contributions are welcome! Whether it's a bug fix, new stack detection, or a fea
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/contextslim.git
+git clone https://github.com/Davissss2/ContextSlimAI.git
 cd contextslim
 
 # Install dependencies
@@ -207,25 +170,9 @@ npm install
 
 # Build
 npm run build
-
-# Link locally for testing
-npm link
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
----
-
-## 📊 Why ContextSlim?
-
-| Without ContextSlim | With ContextSlim |
-|---|---|
-| AI reads `node_modules` | ❌ Excluded |
-| AI reads build artifacts | ❌ Excluded |
-| AI reads media files | ❌ Excluded |
-| AI has no project rules | ✅ Stack-specific rules |
-| ~500K tokens/interaction | ~100K tokens/interaction |
-| Slow, expensive responses | ⚡ Fast, cheap responses |
 
 ---
 
@@ -237,11 +184,4 @@ MIT © [ContextSlim Contributors](LICENSE)
 
 <p align="center">
   <sub>Built with ❤️ to save tokens and developer sanity.</sub>
-</p>
-
-<p align="center">
-  <a href="#installation">Get Started</a> •
-  <a href="#usage">Docs</a> •
-  <a href="#roadmap">Roadmap</a> •
-  <a href="#contributing">Contribute</a>
 </p>

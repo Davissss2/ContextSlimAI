@@ -30,8 +30,9 @@ export async function doctorCommand(): Promise<void> {
   const OPTIMAL_FILES = [
     '.antigravityignore',
     '.cursorignore',
-    'GEMINI.md',
-    'AGENTS.md',
+    '.cursorrules',
+    '.agents/workflows/coding_guidelines.md',
+    '.github/copilot-instructions.md'
   ];
 
   const results: { name: string; exists: boolean }[] = [];
