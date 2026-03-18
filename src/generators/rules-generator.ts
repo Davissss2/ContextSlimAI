@@ -1,5 +1,6 @@
 import { writeFile, readFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
+import { homedir } from 'node:os';
 import type { StackInfo } from '../analyzers/stack-detector.js';
 
 async function ensureDir(filePath: string) {
@@ -161,10 +162,10 @@ export async function generateRulesFiles(
   await ensureDir(cursorPath);
   await safeWrite(cursorPath, getCursorRules(stack), '.cursorrules');
 
-  // 2. Antigravity Rules
-  const antigravityPath = join(dir, '.agent', 'rules', 'general.md');
+  // 2. Antigravity Global Rules
+  const antigravityPath = join(homedir(), '.gemini', 'antigravity', 'global_workflows', 'contextslim_rules.md');
   await ensureDir(antigravityPath);
-  await safeWrite(antigravityPath, getAntigravityRules(stack), '.agent/rules/general.md');
+  await safeWrite(antigravityPath, getAntigravityRules(stack), 'Global Antigravity Rule (contextslim_rules.md)');
 
   // 3. GitHub Copilot Instructions
   const copilotPath = join(dir, '.github', 'copilot-instructions.md');
