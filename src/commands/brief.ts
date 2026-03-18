@@ -6,7 +6,7 @@ import { detectEntryPoints, generateMiniTree } from '../analyzers/project-contex
 export async function generateBriefText(targetDir: string, stack: StackInfo): Promise<string> {
   const projectName = basename(targetDir);
   const entryPoints = await detectEntryPoints(targetDir, stack);
-  const miniTree = await generateMiniTree(targetDir, 1);
+  const miniTree = await generateMiniTree(targetDir, 2);
 
   const lines: string[] = [];
 
@@ -25,18 +25,22 @@ export async function generateBriefText(targetDir: string, stack: StackInfo): Pr
     lines.push(`Entry points: ${epList}`);
   }
 
-  // Structure (depth 1 only — very compact)
+  // Structure (depth 2 — shows subdirectories for better context)
   if (miniTree.trim()) {
     lines.push('');
     lines.push('Structure:');
     const treeLines = miniTree.split('\n').filter((l) => l.trim());
-    // Only include directories for maximum compression
-    const dirLines = treeLines.filter((l) => l.endsWith('/'));
-    if (dirLines.length > 0) {
-      lines.push(...dirLines.map((l) => `  ${l.trim()}`));
-    } else {
-      lines.push(...treeLines.slice(0, 15).map((l) => `  ${l.trim()}`));
-    }
+    // Include dirs + important root config files (max 20 lines)
+    const IMPORTANT_EXTS = new Set(['.json', '.toml', '.yaml', '.yml', '.lock', '.ts', '.js', '.py', '.rs', '.go']);
+    const filtered = treeLines.filter((l) => {
+      if (l.endsWith('/')) return true; // Always include directories
+      // Include root-level config files
+      const trimmed = l.replace(/[├└│─\s]/g, '').trim();
+      const ext = trimmed.includes('.') ? '.' + trimmed.split('.').pop() : '';
+      return IMPORTANT_EXTS.has(ext);
+    });
+    const output = filtered.length > 0 ? filtered : treeLines;
+    lines.push(...output.slice(0, 20).map((l) => `  ${l.trim()}`));
   }
 
   // Detected config files

@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface StackInfo {
@@ -145,7 +145,20 @@ async function detectFrameworksFromDotnet(dir: string): Promise<string[]> {
   return frameworks;
 }
 
-export async function detectStack(dir: string): Promise<StackInfo> {
+async function matchesGlob(dir: string, pattern: string): Promise<string | null> {
+  const ext = pattern.replace('*', '');
+  try {
+    const entries = await readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isFile() && entry.name.endsWith(ext)) {
+        return entry.name;
+      }
+    }
+  } catch {}
+  return null;
+}
+
+async function scanDirForStack(dir: string): Promise<StackInfo> {
   const detectedFiles: string[] = [];
   let name = 'Unknown';
   let language = 'Unknown';
@@ -153,9 +166,16 @@ export async function detectStack(dir: string): Promise<StackInfo> {
   let frameworks: string[] = [];
 
   for (const signal of STACK_SIGNALS) {
-    // Handle glob patterns (*.csproj, *.sln, *.xcodeproj)
     if (signal.file.startsWith('*')) {
-      // Skip glob patterns for now — they need readdir
+      // Resolve glob patterns (*.csproj, *.sln, *.xcodeproj)
+      const matched = await matchesGlob(dir, signal.file);
+      if (matched) {
+        detectedFiles.push(matched);
+        if (name === 'Unknown') {
+          name = signal.stack;
+          language = signal.language;
+        }
+      }
       continue;
     }
     const filePath = join(dir, signal.file);
@@ -208,3 +228,35 @@ export async function detectStack(dir: string): Promise<StackInfo> {
 
   return { name, language, hasTypeScript, detectedFiles, frameworks };
 }
+
+export async function detectStack(dir: string): Promise<StackInfo> {
+  // First: try to detect in the root directory
+  const rootResult = await scanDirForStack(dir);
+  if (rootResult.name !== 'Unknown') {
+    return rootResult;
+  }
+
+  // Fallback: scan immediate subdirectories (depth 1)
+  try {
+    const entries = await readdir(dir, { withFileTypes: true });
+    const subdirs = entries.filter(
+      (e) => e.isDirectory() && !e.name.startsWith('.') && !SKIP_DIRS.has(e.name),
+    );
+
+    for (const sub of subdirs) {
+      const subResult = await scanDirForStack(join(dir, sub.name));
+      if (subResult.name !== 'Unknown') {
+        return subResult;
+      }
+    }
+  } catch {}
+
+  // Nothing found anywhere
+  return rootResult;
+}
+
+const SKIP_DIRS = new Set([
+  'node_modules', 'dist', 'build', 'out', '.git', '.next', '.nuxt',
+  'coverage', '.cache', 'venv', '.venv', 'target', 'vendor',
+  '__pycache__', '.tox', '.mypy_cache', '.pytest_cache',
+]);
