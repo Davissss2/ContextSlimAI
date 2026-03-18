@@ -29,6 +29,35 @@ function getGeminiRules(stack: StackInfo): string {
       '- Use optional chaining (`?.`) and nullish coalescing (`??`).',
       '- Handle errors with try/catch, not `.catch()` chains.',
     );
+    
+    // Framework-specific rules
+    if (stack.frameworks && stack.frameworks.length > 0) {
+      if (stack.frameworks.includes('React') || stack.frameworks.includes('Next.js')) {
+        lines.push(
+          '- Write functional React components using hooks.',
+          '- Avoid class components unless strictly necessary.',
+          '- Keep effect dependencies accurate.',
+        );
+      }
+      if (stack.frameworks.includes('Next.js')) {
+        lines.push(
+          '- Use Next.js App Router conventions if applicable (`page.tsx`, `layout.tsx`).',
+          '- Optimize images with `next/image`.',
+        );
+      }
+      if (stack.frameworks.includes('NestJS')) {
+        lines.push(
+          '- Follow NestJS dependency injection patterns.',
+          '- Use decorators correctly for controllers, services, and modules.',
+        );
+      }
+      if (stack.frameworks.includes('Vue') || stack.frameworks.includes('Nuxt')) {
+        lines.push(
+          '- Use script setup for Vue 3 Composition API.',
+          '- Prefer refs and reactive objects for state management.',
+        );
+      }
+    }
 
     if (stack.hasTypeScript) {
       lines.push(

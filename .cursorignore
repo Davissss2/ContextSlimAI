@@ -1,0 +1,72 @@
+# ===== ContextSlim Auto-Generated =====
+# Dependencies
+node_modules/
+.pnp.*
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.nuxt/
+.output/
+.vercel/
+.netlify/
+
+# Environment & Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Version control
+.git/
+.svn/
+.hg/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & Caches
+*.log
+npm-debug.log*
+.cache/
+.tmp/
+.temp/
+
+# Heavy media assets
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.mp3
+*.wav
+*.flac
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.iso
+*.dmg
+*.pdf
+*.psd
+*.ai
+
+# Lock files (usually not needed for AI context)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# ===== End ContextSlim =====

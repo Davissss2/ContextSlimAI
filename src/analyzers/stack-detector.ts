@@ -1,4 +1,4 @@
-import { access } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface StackInfo {
@@ -6,6 +6,7 @@ export interface StackInfo {
   language: string;
   hasTypeScript: boolean;
   detectedFiles: string[];
+  frameworks: string[];
 }
 
 const STACK_SIGNALS: { file: string; stack: string; language: string }[] = [
@@ -29,11 +30,33 @@ async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
+async function detectFrameworksFromPackageJson(dir: string): Promise<string[]> {
+  try {
+    const pkgContent = await readFile(join(dir, 'package.json'), 'utf-8');
+    const pkg = JSON.parse(pkgContent);
+    const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+    const frameworks: string[] = [];
+
+    if (deps['next']) frameworks.push('Next.js');
+    if (deps['react']) frameworks.push('React');
+    if (deps['vue']) frameworks.push('Vue');
+    if (deps['nuxt']) frameworks.push('Nuxt');
+    if (deps['@nestjs/core']) frameworks.push('NestJS');
+    if (deps['express']) frameworks.push('Express');
+    if (deps['svelte']) frameworks.push('Svelte');
+
+    return frameworks;
+  } catch {
+    return [];
+  }
+}
+
 export async function detectStack(dir: string): Promise<StackInfo> {
   const detectedFiles: string[] = [];
   let name = 'Unknown';
   let language = 'Unknown';
   let hasTypeScript = false;
+  let frameworks: string[] = [];
 
   for (const signal of STACK_SIGNALS) {
     const filePath = join(dir, signal.file);
@@ -57,5 +80,12 @@ export async function detectStack(dir: string): Promise<StackInfo> {
     }
   }
 
-  return { name, language, hasTypeScript, detectedFiles };
+  if (name.includes('Node.js')) {
+    frameworks = await detectFrameworksFromPackageJson(dir);
+    if (frameworks.length > 0) {
+      name += ` (${frameworks[0]})`;
+    }
+  }
+
+  return { name, language, hasTypeScript, detectedFiles, frameworks };
 }
