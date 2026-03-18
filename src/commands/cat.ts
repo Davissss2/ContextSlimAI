@@ -1,12 +1,14 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
-
-const MAX_LINES = 150; // Context ceiling, if it's bigger we start truncating the middle.
-const HEAD_LINES = 75; // Number of lines to show at the top
-const TAIL_LINES = 75; // Number of lines to show at the bottom
+import { ConfigManager } from '../utils/config.js';
 
 export async function catCommand(fileStr: string): Promise<void> {
+  const config = ConfigManager.loadConfig();
+  const maxLines = config.limits.catLines;
+  const headLines = Math.floor(maxLines / 2);
+  const tailLines = Math.ceil(maxLines / 2);
+
   if (!fileStr) {
     console.error(chalk.red('\n❌ Usage: contextslim cat <file>\n'));
     return;
@@ -24,7 +26,8 @@ export async function catCommand(fileStr: string): Promise<void> {
 
     console.log(chalk.bold.hex('#7C3AED')(`\n  📄 ContextSlim CAT: ${targetFile}\n`));
 
-    if (meaningfulLines.length <= MAX_LINES) {
+
+    if (meaningfulLines.length <= maxLines) {
       meaningfulLines.forEach((l, i) => {
         console.log(chalk.gray(`${i + 1} | `) + chalk.white(l));
       });
@@ -35,12 +38,12 @@ export async function catCommand(fileStr: string): Promise<void> {
       );
     } else {
       // Print Head
-      for (let i = 0; i < HEAD_LINES; i++) {
+      for (let i = 0; i < headLines; i++) {
         console.log(chalk.gray(`${i + 1} | `) + chalk.white(meaningfulLines[i]));
       }
 
       // Snip
-      const hiddenLinesCount = meaningfulLines.length - HEAD_LINES - TAIL_LINES;
+      const hiddenLinesCount = meaningfulLines.length - headLines - tailLines;
       console.log(
         chalk.bold.yellow(
           `\n  ... [ ✂️ TRUNCATED: ${hiddenLinesCount} lines hidden to prevent token burnout ] ...\n`
@@ -48,7 +51,7 @@ export async function catCommand(fileStr: string): Promise<void> {
       );
 
       // Print Tail
-      const startIndex = meaningfulLines.length - TAIL_LINES;
+      const startIndex = meaningfulLines.length - tailLines;
       for (let i = startIndex; i < meaningfulLines.length; i++) {
         console.log(chalk.gray(`${i + 1} | `) + chalk.white(meaningfulLines[i]));
       }

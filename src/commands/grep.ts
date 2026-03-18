@@ -1,14 +1,13 @@
 import { stat, readdir, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import chalk from 'chalk';
+import { ConfigManager } from '../utils/config.js';
 
 const IGNORED_DIRS = new Set([
   'node_modules', '.git', '.next', '.nuxt', 'dist', 'build', 'out', 'coverage', '.cache', 'venv', '.venv', 'target', 'vendor'
 ]);
 
-const MAX_MATCHES_PER_FILE = 5;
-
-async function searchDirectory(dir: string, query: string, results: { file: string; line: number; content: string }[], maxResults: number) {
+async function searchDirectory(dir: string, query: string, results: { file: string; line: number; content: string }[], maxResults: number, maxMatchesPerFile: number) {
   if (results.length >= maxResults) return;
 
   try {
@@ -18,9 +17,9 @@ async function searchDirectory(dir: string, query: string, results: { file: stri
 
       const fullPath = join(dir, file.name);
       if (file.isDirectory()) {
-        await searchDirectory(fullPath, query, results, maxResults);
+        await searchDirectory(fullPath, query, results, maxResults, maxMatchesPerFile);
       } else {
-        await searchFile(fullPath, query, results, maxResults);
+        await searchFile(fullPath, query, results, maxResults, maxMatchesPerFile);
       }
     }
   } catch {
@@ -28,7 +27,7 @@ async function searchDirectory(dir: string, query: string, results: { file: stri
   }
 }
 
-async function searchFile(file: string, query: string, results: { file: string; line: number; content: string }[], maxResults: number) {
+async function searchFile(file: string, query: string, results: { file: string; line: number; content: string }[], maxResults: number, maxMatchesPerFile: number) {
   if (results.length >= maxResults) return;
   // skip binary or obvious non-text files based on extension
   if (file.match(/\.(png|jpg|jpeg|gif|ico|svg|mp4|zip|tar\.gz|pdf|lock|exe|dll)$/i)) return;
@@ -40,7 +39,7 @@ async function searchFile(file: string, query: string, results: { file: string; 
 
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].includes(query)) {
-        if (matchesInFile < MAX_MATCHES_PER_FILE) {
+        if (matchesInFile < maxMatchesPerFile) {
           results.push({ file, line: i + 1, content: lines[i].trim() });
           matchesInFile++;
         }
@@ -53,13 +52,16 @@ async function searchFile(file: string, query: string, results: { file: string; 
 }
 
 export async function grepCommand(query: string, dirStr?: string): Promise<void> {
+  const config = ConfigManager.loadConfig();
+  const maxMatchesPerFile = config.limits.grepMatches;
+  
   const targetDir = resolve(process.cwd(), dirStr || '.');
   const maxResults = 50;
   const results: { file: string; line: number; content: string }[] = [];
 
   console.log(chalk.bold.hex('#7C3AED')(`\n  🔍 ContextSlim GREP: "${query}" in ${targetDir}\n`));
 
-  await searchDirectory(targetDir, query, results, maxResults);
+  await searchDirectory(targetDir, query, results, maxResults, maxMatchesPerFile);
 
   if (results.length === 0) {
     console.log(chalk.yellow(`  No matches found for "${query}".\n`));
@@ -77,7 +79,7 @@ export async function grepCommand(query: string, dirStr?: string): Promise<void>
     for (const m of matches) {
       console.log(chalk.gray(`     ${m.line} | `) + chalk.white(m.content));
     }
-    if (matches.length === MAX_MATCHES_PER_FILE) {
+    if (matches.length === maxMatchesPerFile) {
       console.log(chalk.dim(`     ... [Truncated max matches per file]`));
     }
     console.log('');

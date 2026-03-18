@@ -1,6 +1,7 @@
 import { readdir, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import chalk from 'chalk';
+import { ConfigManager } from '../utils/config.js';
 
 const IGNORED_DIRS = new Set([
   'node_modules', '.git', '.next', '.nuxt', 'dist', 'build', 'out', 'coverage', '.cache', 'venv', '.venv', 'target', 'vendor'
@@ -47,8 +48,9 @@ async function generateTree(dirPath: string, prefix = '', depth = 0, maxDepth = 
 }
 
 export async function treeCommand(dirStr?: string, maxDepthStr?: string): Promise<void> {
+  const config = ConfigManager.loadConfig();
   const targetDir = resolve(process.cwd(), dirStr || '.');
-  const maxDepth = maxDepthStr ? parseInt(maxDepthStr, 10) : 3;
+  const maxDepth = maxDepthStr ? parseInt(maxDepthStr, 10) : config.limits.treeDepth;
 
   console.log(chalk.bold.hex('#7C3AED')(`\n  🌳 ContextSlim TREE (Max Depth: ${maxDepth})\n`));
   console.log(chalk.cyan.bold(targetDir));
