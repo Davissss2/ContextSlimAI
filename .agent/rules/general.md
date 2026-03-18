@@ -1,3 +1,6 @@
+---
+description: General rules and instructions for Antigravity
+---
 # Antigravity General Rules
 
 ## General Guidelines
