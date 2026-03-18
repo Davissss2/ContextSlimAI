@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { writeFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { StackInfo } from '../analyzers/stack-detector.js';
 
@@ -189,13 +189,32 @@ export async function generateIgnoreFiles(
 
   for (const fileName of files) {
     const filePath = join(dir, fileName);
-    await writeFile(filePath, content, 'utf-8');
+    let existingContent = '';
+    try {
+      existingContent = await readFile(filePath, 'utf-8');
+    } catch {}
+
+    if (existingContent && !existingContent.includes('ContextSlim Auto-Generated')) {
+      await writeFile(filePath, existingContent + '\n\n' + content, 'utf-8');
+    } else if (!existingContent) {
+      await writeFile(filePath, content, 'utf-8');
+    }
     createdFiles.push(fileName);
   }
 
-  // Generate .gitattributes
-  const gitattrPatterns = getGitAttributesPatterns(stack);
-  await writeFile(join(dir, '.gitattributes'), gitattrPatterns.join('\n') + '\n', 'utf-8');
+  // Generate .gitattributes safely
+  const gitattrPath = join(dir, '.gitattributes');
+  const gitattrPatterns = getGitAttributesPatterns(stack).join('\n') + '\n';
+  let existingGitAttr = '';
+  try {
+    existingGitAttr = await readFile(gitattrPath, 'utf-8');
+  } catch {}
+
+  if (existingGitAttr && !existingGitAttr.includes('ContextSlim Auto-Generated')) {
+    await writeFile(gitattrPath, existingGitAttr + '\n\n' + gitattrPatterns, 'utf-8');
+  } else if (!existingGitAttr) {
+    await writeFile(gitattrPath, gitattrPatterns, 'utf-8');
+  }
   createdFiles.push('.gitattributes');
 
   return createdFiles;
