@@ -303,3 +303,48 @@ Config files: package.json, tsconfig.json
 - Provide code edits without outputting the entire file.
 - Avoid rambling explanations before writing code.
 - Stay in character as a senior developer maintaining this exact stack.
+
+# Claude Code Project Context
+
+## Project Brief
+```text
+Project: contextslim
+Stack: Node.js + TypeScript
+Language: TypeScript (TypeScript)
+Entry points: src/index.ts (Main entry)
+
+Structure:
+  ├── assets/
+  ├── bin/
+  ├── src/
+  │   ├── analyzers/
+  │   ├── commands/
+  │   ├── generators/
+  │   ├── utils/
+Config files: package.json, tsconfig.json
+```
+
+## General Guidelines
+
+- **Token Optimization Priority**: Read only the necessary context. Do not read entire directories or large lockfiles unless explicitly requested.
+- **Use AI-Optimized Commands**: When exploring the terminal, PREFER `npx contextslim tree [dir]` or `npx contextslim ls [dir]` instead of standard `tree` or `ls`. When reading files, PREFER `npx contextslim cat <file>` instead of `cat`. When making text searches, PREFER `npx contextslim grep <query>`. To understand the skeleton of a file without reading logic, STRICTLY use `npx contextslim map <file>`.
+- **Be concise**: Give direct answers. Do not repeat code that already exists in the project unless modifying it.
+- **Be modular**: Write small, focused functions with clear responsibilities.
+- **Follow existing patterns**: Match the coding style, naming conventions, and patterns already used in this codebase.
+- **Prefer edits over rewrites**: When modifying code, show only the changed parts or use strict replacements.
+
+## Stack: Node.js + TypeScript
+
+- Use **ES Modules** (`import`/`export`) — not CommonJS (`require`).
+- Prefer `const` over `let`. Never use `var`.
+- Use **async/await** over raw Promises or callbacks.
+- Use optional chaining (`?.`) and nullish coalescing (`??`).
+- Handle errors gracefully with try/catch.
+- Define explicit **TypeScript types** for function parameters and return values.
+- Use `interface` for object shapes, `type` for unions/intersections.
+- Avoid `any` — use `unknown` when the type is truly uncertain.
+
+## Claude Specific Instructions
+- Provide code edits without outputting the entire file.
+- Avoid rambling explanations before writing code.
+- Stay in character as a senior developer maintaining this exact stack.
