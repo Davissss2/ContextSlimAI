@@ -395,9 +395,9 @@ export async function generateRulesFiles(
 
   // 2. Antigravity Global Rules & 3. Local Rules
   if (ides.includes('antigravity')) {
-    const antigravityGlobalPath = join(homedir(), '.gemini', 'antigravity', 'global_rules', 'contextslim.md');
+    const antigravityGlobalPath = join(homedir(), '.gemini', 'GEMINI.md');
     await ensureDir(antigravityGlobalPath);
-    await generatedWrite(antigravityGlobalPath, getAntigravityRules(stack), 'Global Antigravity Rules (global_rules/contextslim.md)');
+    await generatedWrite(antigravityGlobalPath, getAntigravityRules(stack), 'Global Antigravity Rules (~/.gemini/GEMINI.md)');
 
     const antigravityLocalPath = join(dir, '.agent', 'rules', 'general.md');
     const localContent = getLocalAntigravityRules(stack, briefText);

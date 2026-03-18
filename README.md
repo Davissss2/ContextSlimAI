@@ -59,7 +59,7 @@ ContextSlim analyzes your project, detects the stack, and auto-generates:
 | `.cursorrules` | AI behavior rules optimized for Cursor AI |
 | `CLAUDE.md` | Context configuration for Claude Code |
 | `.agent/rules/general.md` | **Local** project-specific context for Antigravity (stack, entry points, structure) |
-| `~/.gemini/antigravity/global_workflows/contextslim_rules.md` | **Global** ContextSlim command guide for Antigravity |
+| `~/.gemini/GEMINI.md` | **Global** ContextSlim command guide for Antigravity |
 | `.github/copilot-instructions.md` | Specific instructions for GitHub Copilot |
 | `.gitattributes` | Prevents large auto-generated files from cluttering GitHub PRs |
 
@@ -212,7 +212,7 @@ ContextSlim auto-detects **20+ stacks and frameworks**:
 
 ContextSlim generates a **two-layer rules system** for Antigravity:
 
-### Global Rules (`~/.gemini/antigravity/global_workflows/contextslim_rules.md`)
+### Global Rules (`~/.gemini/GEMINI.md`)
 Teaches the AI **how to use ContextSlim** and best practices:
 
 - **Progressive Context** — Always escalate: `tree` → `map` → `view_file` (specific lines) → `view_file` (full)
@@ -248,9 +248,8 @@ your-project/
 │       └── general.md               # Local project context (stack, entry points, tree)
 ├── .github/
 │   └── copilot-instructions.md      # Rules for Copilot
-└── ~/.gemini/antigravity/
-    └── global_workflows/
-        └── contextslim_rules.md     # Global ContextSlim command guide
+└── ~/.gemini/
+    └── GEMINI.md                    # Global ContextSlim command guide
 ```
 
 ---
@@ -261,11 +260,13 @@ Features planned for future releases:
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| `contextslim diff` | Show only changes since last commit — saves massive tokens for "fix this bug" flows | 🔜 Planned |
+| `contextslim diff` | Show only changes since last commit — saves massive tokens for "fix this bug" flows | ✅ Done |
 | `contextslim deps <file>` | Dependency graph: what a file imports and what imports it | 🔜 Planned |
-| `contextslim stats` | Real metrics: measure actual token savings before/after | 🔜 Planned |
-| `.contextslimrc` | User config file: customize limits, select IDEs, add custom entry points | 🔜 Planned |
+| `contextslim stats` | Real metrics: measure exact token savings during runs | ✅ Done |
+| `.contextslimrc` | Config file to customize limits, exclude patterns, IDEs logic | ✅ Done |
 | Monorepo support | Detect Turborepo/pnpm workspaces and generate context per package | 🔜 Planned |
+| `contextslim status` | Health Checks / Rule states | 🔜 Planned |
+| `contextslim clean` | Purge all generated optimization files to reset | 🔜 Planned |
 | `contextslim benchmark` | Compare token usage with/without ContextSlim on real workflows | 💡 Idea |
 
 ---
