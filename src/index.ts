@@ -15,7 +15,7 @@ program
   .description(
     '⚡ CLI tool to optimize AI IDE token consumption — auto-generates exclusion files & AI rules',
   )
-  .version('1.0.0');
+  .version('1.2.0');
 
 program
   .command('init')
