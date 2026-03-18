@@ -117,6 +117,13 @@ A lightweight `grep` killer explicitly built for AI. Automatically ignores massi
 contextslim grep <query> [target-dir]
 ```
 
+### 7. `map` - The Zero-Token Skeleton Reader
+Want an AI to understand the structure of a file without reading the logic? `map` strips out everything except `export`, `function`, `class`, and `interface` signatures. What was a 2,000-line file becomes a 20-line structural summary.
+
+```bash
+contextslim map <target-file>
+```
+
 ---
 
 ## 🔍 Advanced Stack Detection

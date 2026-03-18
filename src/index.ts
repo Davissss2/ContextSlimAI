@@ -5,6 +5,7 @@ import { doctorCommand } from './commands/doctor.js';
 import { lsCommand } from './commands/ls.js';
 import { catCommand } from './commands/cat.js';
 import { grepCommand } from './commands/grep.js';
+import { mapCommand } from './commands/map.js';
 
 const program = new Command();
 
@@ -83,6 +84,18 @@ program
   .action(async (query, dir) => {
     try {
       await grepCommand(query, dir);
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('map <file>')
+  .description('Map out a file by reading only its structural signatures, dropping logic entirely')
+  .action(async (file) => {
+    try {
+      await mapCommand(file);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);
