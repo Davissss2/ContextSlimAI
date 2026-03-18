@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { initCommand } from './commands/init.js';
 import { scanCommand } from './commands/scan.js';
 import { statsCommand } from './commands/stats.js';
+import { diffCommand } from './commands/diff.js';
 import { doctorCommand } from './commands/doctor.js';
 import { lsCommand } from './commands/ls.js';
 import { catCommand } from './commands/cat.js';
@@ -51,6 +52,18 @@ program
   .action(async () => {
     try {
       await statsCommand();
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('diff [target]')
+  .description('Extract AI-optimized changes by filtering out heavy directories or binaries')
+  .action(async (target) => {
+    try {
+      await diffCommand(target);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);

@@ -1,17 +1,13 @@
 import { basename, resolve } from 'node:path';
 import chalk from 'chalk';
-import { detectStack } from '../analyzers/stack-detector.js';
+import { detectStack, StackInfo } from '../analyzers/stack-detector.js';
 import { detectEntryPoints, generateMiniTree } from '../analyzers/project-context.js';
 
-export async function briefCommand(dir?: string): Promise<void> {
-  const targetDir = resolve(dir || '.');
+export async function generateBriefText(targetDir: string, stack: StackInfo): Promise<string> {
   const projectName = basename(targetDir);
-
-  const stack = await detectStack(targetDir);
   const entryPoints = await detectEntryPoints(targetDir, stack);
   const miniTree = await generateMiniTree(targetDir, 1);
 
-  // Build the brief
   const lines: string[] = [];
 
   // Header
@@ -48,7 +44,14 @@ export async function briefCommand(dir?: string): Promise<void> {
     lines.push(`Config files: ${stack.detectedFiles.join(', ')}`);
   }
 
-  const brief = lines.join('\n');
+  return lines.join('\n');
+}
+
+export async function briefCommand(dir?: string): Promise<void> {
+  const targetDir = resolve(dir || '.');
+  const stack = await detectStack(targetDir);
+  const brief = await generateBriefText(targetDir, stack);
+  
   const tokenEstimate = Math.round(brief.length / 4); // rough estimate: ~4 chars per token
 
   // Print colored output
