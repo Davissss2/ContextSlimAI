@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { initCommand } from './commands/init.js';
 import { scanCommand } from './commands/scan.js';
+import { statsCommand } from './commands/stats.js';
 import { doctorCommand } from './commands/doctor.js';
 import { lsCommand } from './commands/ls.js';
 import { catCommand } from './commands/cat.js';
@@ -38,6 +39,18 @@ program
   .action(async () => {
     try {
       await scanCommand();
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('stats')
+  .description('Measure exact token usage and savings with ContextSlim')
+  .action(async () => {
+    try {
+      await statsCommand();
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);
