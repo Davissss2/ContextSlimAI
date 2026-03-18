@@ -2,6 +2,8 @@ import { Command } from 'commander';
 import { initCommand } from './commands/init.js';
 import { scanCommand } from './commands/scan.js';
 import { doctorCommand } from './commands/doctor.js';
+import { lsCommand } from './commands/ls.js';
+import { catCommand } from './commands/cat.js';
 
 const program = new Command();
 
@@ -44,6 +46,30 @@ program
   .action(async () => {
     try {
       await doctorCommand();
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('ls [dir]')
+  .description('List files in a directory, hiding context-heavy folders')
+  .action(async (dir) => {
+    try {
+      await lsCommand(dir);
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('cat <file>')
+  .description('Read a file, suppressing blank lines and dropping the middle if too large')
+  .action(async (file) => {
+    try {
+      await catCommand(file);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);

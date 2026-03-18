@@ -11,6 +11,7 @@ function getBaseRules(stack: StackInfo): string[] {
     '## General Guidelines',
     '',
     '- **Token Optimization Priority**: Read only the necessary context. Do not read entire directories or large lockfiles unless explicitly requested.',
+    '- **Use AI-Optimized Commands**: When exploring the terminal, PREFER `npx contextslim ls [dir]` instead of standard `ls`. When reading files, PREFER `npx contextslim cat <file>` instead of standard `cat`.',
     '- **Be concise**: Give direct answers. Do not repeat code that already exists in the project unless modifying it.',
     '- **Be modular**: Write small, focused functions with clear responsibilities.',
     '- **Follow existing patterns**: Match the coding style, naming conventions, and patterns already used in this codebase.',

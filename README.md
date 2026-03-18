@@ -95,6 +95,20 @@ Verifies that all context-slimming files are present and properly configured.
 contextslim doctor
 ```
 
+### 4. `ls` - The AI-Optimized Directory Listing
+Lists files like `ls` or `dir`, but strictly hides `node_modules`, builds, caches, and noisy directories. Useful for AI agents navigating your codebase without token-dumping.
+
+```bash
+contextslim ls [target-dir]
+```
+
+### 5. `cat` - The AI-Optimized File Reader
+Reads a file but violently optimizes it. It drops empty lines to pack context tightly, and if a file exceeds 150 lines, it snips out the middle and only shows the top and bottom with a warning. A massive life-saver when an AI runs `cat` on a compiled payload or a huge JSON.
+
+```bash
+contextslim cat <target-file>
+```
+
 ---
 
 ## 🔍 Advanced Stack Detection
