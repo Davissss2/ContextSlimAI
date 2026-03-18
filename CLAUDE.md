@@ -1,4 +1,4 @@
-# GitHub Copilot Custom Instructions
+# Claude Code Project Context
 
 ## General Guidelines
 
@@ -19,3 +19,8 @@
 - Define explicit **TypeScript types** for function parameters and return values.
 - Use `interface` for object shapes, `type` for unions/intersections.
 - Avoid `any` — use `unknown` when the type is truly uncertain.
+
+## Claude Specific Instructions
+- Provide code edits without outputting the entire file.
+- Avoid rambling explanations before writing code.
+- Stay in character as a senior developer maintaining this exact stack.

@@ -31,8 +31,9 @@ export async function doctorCommand(): Promise<void> {
     '.antigravityignore',
     '.cursorignore',
     '.cursorrules',
-    '.agents/workflows/coding_guidelines.md',
+    '.agents/rules.md',
     '.github/copilot-instructions.md',
+    'CLAUDE.md',
     '.gitattributes'
   ];
 

@@ -4,6 +4,7 @@ import { scanCommand } from './commands/scan.js';
 import { doctorCommand } from './commands/doctor.js';
 import { lsCommand } from './commands/ls.js';
 import { catCommand } from './commands/cat.js';
+import { grepCommand } from './commands/grep.js';
 
 const program = new Command();
 
@@ -70,6 +71,18 @@ program
   .action(async (file) => {
     try {
       await catCommand(file);
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('grep <query> [dir]')
+  .description('Search for a string across files, truncating massive outputs to save tokens')
+  .action(async (query, dir) => {
+    try {
+      await grepCommand(query, dir);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
       process.exit(1);

@@ -11,7 +11,7 @@ function getBaseRules(stack: StackInfo): string[] {
     '## General Guidelines',
     '',
     '- **Token Optimization Priority**: Read only the necessary context. Do not read entire directories or large lockfiles unless explicitly requested.',
-    '- **Use AI-Optimized Commands**: When exploring the terminal, PREFER `npx contextslim ls [dir]` instead of standard `ls`. When reading files, PREFER `npx contextslim cat <file>` instead of standard `cat`.',
+    '- **Use AI-Optimized Commands**: When exploring the terminal, PREFER `npx contextslim ls [dir]` instead of `ls`. When reading files, PREFER `npx contextslim cat <file>` instead of `cat`. When making text searches, PREFER `npx contextslim grep <query>` instead of `grep` or `find`.',
     '- **Be concise**: Give direct answers. Do not repeat code that already exists in the project unless modifying it.',
     '- **Be modular**: Write small, focused functions with clear responsibilities.',
     '- **Follow existing patterns**: Match the coding style, naming conventions, and patterns already used in this codebase.',
@@ -97,20 +97,29 @@ function getCursorRules(stack: StackInfo): string {
   return content.join('\n');
 }
 
-function getAntigravityWorkflow(stack: StackInfo): string {
+function getAntigravityRules(stack: StackInfo): string {
   const content = [
-    '---',
-    'description: Standard Coding Guidelines and Context Management',
-    '---',
-    '',
-    '# Antigravity Workflow: Coding & Context',
+    '# Antigravity General Rules',
     '',
     ...getBaseRules(stack),
     '## Antigravity Specific Instructions',
-    '- Use `grep_search` and `find_by_name` to locate files instead of heavy `list_dir` or reading large files.',
-    '- When editing exactly 1 contiguous block, use `replace_file_content`.',
+    '- Always prioritize using specific builtin tools like `grep_search` and `find_by_name` over bash commands.',
+    '- Use `npx contextslim` terminal wrappers if you must use bash exploration.',
+    '- When editing blocks, use `replace_file_content` instead of multi-edit unless strictly non-contiguous.',
     '- Keep line ranges tight to save tokens.',
-    '- For new functionalities, verify by running tests or the compiler via `run_command` if safe.',
+  ];
+  return content.join('\n');
+}
+
+function getClaudeRules(stack: StackInfo): string {
+  const content = [
+    '# Claude Code Project Context',
+    '',
+    ...getBaseRules(stack),
+    '## Claude Specific Instructions',
+    '- Provide code edits without outputting the entire file.',
+    '- Avoid rambling explanations before writing code.',
+    '- Stay in character as a senior developer maintaining this exact stack.',
   ];
   return content.join('\n');
 }
@@ -136,17 +145,23 @@ export async function generateRulesFiles(
   await writeFile(cursorPath, getCursorRules(stack), 'utf-8');
   createdFiles.push('.cursorrules');
 
-  // 2. Antigravity Workflow
-  const antigravityPath = join(dir, '.agents', 'workflows', 'coding_guidelines.md');
+  // 2. Antigravity Rules
+  const antigravityPath = join(dir, '.agents', 'rules.md');
   await ensureDir(antigravityPath);
-  await writeFile(antigravityPath, getAntigravityWorkflow(stack), 'utf-8');
-  createdFiles.push('.agents/workflows/coding_guidelines.md');
+  await writeFile(antigravityPath, getAntigravityRules(stack), 'utf-8');
+  createdFiles.push('.agents/rules.md');
 
   // 3. GitHub Copilot Instructions
   const copilotPath = join(dir, '.github', 'copilot-instructions.md');
   await ensureDir(copilotPath);
   await writeFile(copilotPath, getCopilotInstructions(stack), 'utf-8');
   createdFiles.push('.github/copilot-instructions.md');
+
+  // 4. Claude Code / CLAUDE.md
+  const claudePath = join(dir, 'CLAUDE.md');
+  await ensureDir(claudePath);
+  await writeFile(claudePath, getClaudeRules(stack), 'utf-8');
+  createdFiles.push('CLAUDE.md');
 
   return createdFiles;
 }

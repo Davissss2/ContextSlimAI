@@ -47,7 +47,8 @@ ContextSlim analyzes your project, detects the stack (Node, Python, Rust, React,
 | `.antigravityignore` | Exclude heavy dirs from Antigravity context |
 | `.cursorignore` | Exclude heavy dirs from Cursor context |
 | `.cursorrules` | AI behavior rules optimized for Cursor AI |
-| `.agents/workflows/coding_guidelines.md` | Workflows and context rules for Antigravity |
+| `CLAUDE.md` | Context configuration for Claude Code |
+| `.agents/rules.md` | Native rules indexing for Antigravity agents |
 | `.github/copilot-instructions.md` | Specific instructions for GitHub Copilot |
 | `.gitattributes` | Prevents large auto-generated files from cluttering GitHub PRs |
 
@@ -96,17 +97,24 @@ contextslim doctor
 ```
 
 ### 4. `ls` - The AI-Optimized Directory Listing
-Lists files like `ls` or `dir`, but strictly hides `node_modules`, builds, caches, and noisy directories. Useful for AI agents navigating your codebase without token-dumping.
+Lists files like `ls` o `dir`, but strictly hides noisy directories.
 
 ```bash
 contextslim ls [target-dir]
 ```
 
 ### 5. `cat` - The AI-Optimized File Reader
-Reads a file but violently optimizes it. It drops empty lines to pack context tightly, and if a file exceeds 150 lines, it snips out the middle and only shows the top and bottom with a warning. A massive life-saver when an AI runs `cat` on a compiled payload or a huge JSON.
+Reads a file but violently optimizes it. It drops empty lines to pack context, and if a file exceeds 150 lines, it snips out the middle.
 
 ```bash
 contextslim cat <target-file>
+```
+
+### 6. `grep` - The AI-Optimized Searcher
+A lightweight `grep` killer explicitly built for AI. Automatically ignores massive directories like `node_modules` or `dist` and strictly caps results to just 5 matches per file so your AI doesn't burn out its memory reading thousands of log occurrences.
+
+```bash
+contextslim grep <query> [target-dir]
 ```
 
 ---
@@ -134,16 +142,13 @@ your-project/
 ├── .antigravityignore               # Context blockers for Antigravity
 ├── .cursorignore                    # Context blockers for Cursor
 ├── .cursorrules                     # Rules for Cursor AI behavior
+├── CLAUDE.md                        # Claude Code rules
 ├── .gitattributes                   # Mark heavy files to be ignored by Github AI PR reviewers
 ├── .github/
 │   └── copilot-instructions.md      # Rules for Copilot
 └── .agents/
-    └── workflows/
-        └── coding_guidelines.md     # Automated workflow logic for Antigravity
+    └── rules.md                     # Native rules index for Antigravity
 ```
-
-### Wait, why `.agents/workflows/` for Antigravity?
-Antigravity uses a robust agent-based context system. A dedicated Markdown file with YAML frontmatter ensures it understands exactly how to read and write your project token-efficiently.
 
 ---
 

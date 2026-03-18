@@ -1,12 +1,9 @@
----
-description: Standard Coding Guidelines and Context Management
----
-
-# Antigravity Workflow: Coding & Context
+# Antigravity General Rules
 
 ## General Guidelines
 
 - **Token Optimization Priority**: Read only the necessary context. Do not read entire directories or large lockfiles unless explicitly requested.
+- **Use AI-Optimized Commands**: When exploring the terminal, PREFER `npx contextslim ls [dir]` instead of `ls`. When reading files, PREFER `npx contextslim cat <file>` instead of `cat`. When making text searches, PREFER `npx contextslim grep <query>` instead of `grep` or `find`.
 - **Be concise**: Give direct answers. Do not repeat code that already exists in the project unless modifying it.
 - **Be modular**: Write small, focused functions with clear responsibilities.
 - **Follow existing patterns**: Match the coding style, naming conventions, and patterns already used in this codebase.
@@ -24,7 +21,7 @@ description: Standard Coding Guidelines and Context Management
 - Avoid `any` — use `unknown` when the type is truly uncertain.
 
 ## Antigravity Specific Instructions
-- Use `grep_search` and `find_by_name` to locate files instead of heavy `list_dir` or reading large files.
-- When editing exactly 1 contiguous block, use `replace_file_content`.
+- Always prioritize using specific builtin tools like `grep_search` and `find_by_name` over bash commands.
+- Use `npx contextslim` terminal wrappers if you must use bash exploration.
+- When editing blocks, use `replace_file_content` instead of multi-edit unless strictly non-contiguous.
 - Keep line ranges tight to save tokens.
-- For new functionalities, verify by running tests or the compiler via `run_command` if safe.
