@@ -99,6 +99,9 @@ function getCursorRules(stack: StackInfo): string {
 
 function getAntigravityRules(stack: StackInfo): string {
   const content = [
+    '---',
+    'description: General rules and instructions for Antigravity',
+    '---',
     '# Antigravity General Rules',
     '',
     ...getBaseRules(stack),
@@ -159,9 +162,9 @@ export async function generateRulesFiles(
   await safeWrite(cursorPath, getCursorRules(stack), '.cursorrules');
 
   // 2. Antigravity Rules
-  const antigravityPath = join(dir, '.agents', 'rules.md');
+  const antigravityPath = join(dir, '.agent', 'rules', 'general.md');
   await ensureDir(antigravityPath);
-  await safeWrite(antigravityPath, getAntigravityRules(stack), '.agents/rules.md');
+  await safeWrite(antigravityPath, getAntigravityRules(stack), '.agent/rules/general.md');
 
   // 3. GitHub Copilot Instructions
   const copilotPath = join(dir, '.github', 'copilot-instructions.md');
