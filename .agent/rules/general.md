@@ -43,8 +43,11 @@ contextslim/
 │   ├── generators/
 │   │   ├── ignore-generator.ts
 │   │   └── rules-generator.ts
+│   ├── utils/
+│   │   └── config.ts
 │   └── index.ts
 ├── .antigravityignore
+├── .contextslimrc.json
 ├── .cursorignore
 ├── .cursorrules
 ├── .gitattributes

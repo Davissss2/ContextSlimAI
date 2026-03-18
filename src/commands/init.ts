@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import { detectStack } from '../analyzers/stack-detector.js';
 import { generateIgnoreFiles } from '../generators/ignore-generator.js';
 import { generateRulesFiles } from '../generators/rules-generator.js';
+import { ConfigManager } from '../utils/config.js';
 
 export async function initCommand(): Promise<void> {
   const targetDir = resolve(process.cwd());
@@ -14,6 +15,17 @@ export async function initCommand(): Promise<void> {
       chalk.dim(' — Optimize your AI IDE context'),
   );
   console.log('');
+
+  // Config: Load or generate .contextslimrc.json
+  const configSpinner = ora({
+    text: chalk.cyan('Loading configuration...'),
+    spinner: 'dots',
+  }).start();
+  
+  const config = ConfigManager.loadConfig();
+  // We generate a default config file if it doesn't exist so the user can easily see their settings
+  ConfigManager.generateDefaultConfig();
+  configSpinner.succeed(chalk.green('Configuration loaded'));
 
   // Step 1: Detect stack
   const stackSpinner = ora({
@@ -46,7 +58,7 @@ export async function initCommand(): Promise<void> {
 
   let ignoreFiles: string[];
   try {
-    ignoreFiles = await generateIgnoreFiles(targetDir, stack);
+    ignoreFiles = await generateIgnoreFiles(targetDir, stack, config);
     ignoreSpinner.succeed(
       chalk.green(
         `Created ${ignoreFiles.map((f) => chalk.bold(f)).join(' and ')}`,
@@ -65,7 +77,7 @@ export async function initCommand(): Promise<void> {
 
   let rulesFiles: string[];
   try {
-    rulesFiles = await generateRulesFiles(targetDir, stack);
+    rulesFiles = await generateRulesFiles(targetDir, stack, config);
     rulesSpinner.succeed(
       chalk.green(
         `Created ${rulesFiles.map((f) => chalk.bold(f)).join(' and ')}`,

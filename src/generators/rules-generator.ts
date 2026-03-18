@@ -364,9 +364,12 @@ async function getLocalAntigravityRules(
   return lines.join('\n');
 }
 
+import type { ContextSlimConfig } from '../utils/config.js';
+
 export async function generateRulesFiles(
   dir: string,
   stack: StackInfo,
+  config?: ContextSlimConfig
 ): Promise<string[]> {
   const createdFiles: string[] = [];
 
@@ -401,30 +404,39 @@ export async function generateRulesFiles(
     createdFiles.push(fileName);
   };
 
+  const ides = config?.ides || ['cursor', 'antigravity', 'claude', 'copilot'];
+
   // 1. Cursor Rules
-  const cursorPath = join(dir, '.cursorrules');
-  await ensureDir(cursorPath);
-  await safeWrite(cursorPath, getCursorRules(stack), '.cursorrules');
+  if (ides.includes('cursor')) {
+    const cursorPath = join(dir, '.cursorrules');
+    await ensureDir(cursorPath);
+    await safeWrite(cursorPath, getCursorRules(stack), '.cursorrules');
+  }
 
-  // 2. Antigravity Global Rules (tool usage wisdom)
-  const antigravityGlobalPath = join(homedir(), '.gemini', 'antigravity', 'global_workflows', 'contextslim_rules.md');
-  await ensureDir(antigravityGlobalPath);
-  await generatedWrite(antigravityGlobalPath, getAntigravityRules(stack), 'Global Antigravity Rules (contextslim_rules.md)');
+  // 2. Antigravity Global Rules & 3. Local Rules
+  if (ides.includes('antigravity')) {
+    const antigravityGlobalPath = join(homedir(), '.gemini', 'antigravity', 'global_workflows', 'contextslim_rules.md');
+    await ensureDir(antigravityGlobalPath);
+    await generatedWrite(antigravityGlobalPath, getAntigravityRules(stack), 'Global Antigravity Rules (contextslim_rules.md)');
 
-  // 3. Antigravity Local Rules (project-specific context)
-  const antigravityLocalPath = join(dir, '.agent', 'rules', 'general.md');
-  const localContent = await getLocalAntigravityRules(dir, stack);
-  await generatedWrite(antigravityLocalPath, localContent, 'Local Antigravity Rules (.agent/rules/general.md)');
+    const antigravityLocalPath = join(dir, '.agent', 'rules', 'general.md');
+    const localContent = await getLocalAntigravityRules(dir, stack);
+    await generatedWrite(antigravityLocalPath, localContent, 'Local Antigravity Rules (.agent/rules/general.md)');
+  }
 
   // 4. GitHub Copilot Instructions
-  const copilotPath = join(dir, '.github', 'copilot-instructions.md');
-  await ensureDir(copilotPath);
-  await safeWrite(copilotPath, getCopilotInstructions(stack), '.github/copilot-instructions.md');
+  if (ides.includes('copilot')) {
+    const copilotPath = join(dir, '.github', 'copilot-instructions.md');
+    await ensureDir(copilotPath);
+    await safeWrite(copilotPath, getCopilotInstructions(stack), '.github/copilot-instructions.md');
+  }
 
   // 5. Claude Code / CLAUDE.md
-  const claudePath = join(dir, 'CLAUDE.md');
-  await ensureDir(claudePath);
-  await safeWrite(claudePath, getClaudeRules(stack), 'CLAUDE.md');
+  if (ides.includes('claude')) {
+    const claudePath = join(dir, 'CLAUDE.md');
+    await ensureDir(claudePath);
+    await safeWrite(claudePath, getClaudeRules(stack), 'CLAUDE.md');
+  }
 
   return createdFiles;
 }

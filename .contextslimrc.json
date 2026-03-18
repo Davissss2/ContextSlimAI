@@ -1,0 +1,21 @@
+{
+  "mode": "aggressive",
+  "budget": {
+    "maxTokens": 100000
+  },
+  "ides": [
+    "antigravity",
+    "cursor",
+    "claude",
+    "copilot"
+  ],
+  "limits": {
+    "catLines": 500,
+    "grepMatches": 20,
+    "treeDepth": 3
+  },
+  "patterns": {
+    "alwaysInclude": [],
+    "alwaysExclude": []
+  }
+}

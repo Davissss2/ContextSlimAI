@@ -124,7 +124,9 @@ const PHP_PATTERNS = [
   'composer.lock',
 ];
 
-function getStackPatterns(stack: StackInfo): string[] {
+import type { ContextSlimConfig } from '../utils/config.js';
+
+function getStackPatterns(stack: StackInfo, config?: ContextSlimConfig): string[] {
   const patterns = [...BASE_IGNORE_PATTERNS];
 
   switch (stack.language) {
@@ -143,6 +145,18 @@ function getStackPatterns(stack: StackInfo): string[] {
     case 'PHP':
       patterns.push(...PHP_PATTERNS);
       break;
+  }
+
+  // Inject custom patterns from .contextslimrc
+  if (config) {
+    if (config.patterns.alwaysExclude && config.patterns.alwaysExclude.length > 0) {
+      patterns.push('', '# Custom Exclusions from .contextslimrc');
+      patterns.push(...config.patterns.alwaysExclude);
+    }
+    if (config.patterns.alwaysInclude && config.patterns.alwaysInclude.length > 0) {
+      patterns.push('', '# Custom Inclusions from .contextslimrc');
+      patterns.push(...config.patterns.alwaysInclude.map(p => `!${p}`));
+    }
   }
 
   patterns.push('', '# ===== End ContextSlim =====');
@@ -180,14 +194,20 @@ function getGitAttributesPatterns(stack: StackInfo): string[] {
 export async function generateIgnoreFiles(
   dir: string,
   stack: StackInfo,
+  config?: ContextSlimConfig
 ): Promise<string[]> {
-  const patterns = getStackPatterns(stack);
+  const patterns = getStackPatterns(stack, config);
   const content = patterns.join('\n') + '\n';
   const createdFiles: string[] = [];
 
-  const files = ['.antigravityignore', '.cursorignore'];
+  const ignoreFilesToCreate = [];
+  if (config?.ides.includes('antigravity')) ignoreFilesToCreate.push('.antigravityignore');
+  if (config?.ides.includes('cursor')) ignoreFilesToCreate.push('.cursorignore');
 
-  for (const fileName of files) {
+  // Fallback to defaults if array is somehow empty, though configmanager prevents this in most cases
+  const filesList = ignoreFilesToCreate.length > 0 ? ignoreFilesToCreate : ['.antigravityignore', '.cursorignore'];
+
+  for (const fileName of filesList) {
     const filePath = join(dir, fileName);
     let existingContent = '';
     try {
