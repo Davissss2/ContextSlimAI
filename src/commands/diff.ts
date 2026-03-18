@@ -3,6 +3,7 @@ import ora from 'ora';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { ConfigManager } from '../utils/config.js';
+import { MeterRecorder } from '../meter/recorder.js';
 
 const execAsync = promisify(exec);
 
@@ -127,6 +128,15 @@ export async function diffCommand(target?: string): Promise<void> {
     printFormattedDiff(diffLines.slice(0, MAX_DIFF_LINES));
     console.log(chalk.bold.yellow(`\n  ... [ ✂️ TRUNCATED: Diff too large (${diffLines.length} lines). Only showing first ${MAX_DIFF_LINES} lines ] ...\n`));
   }
+
+  // Record diff event: raw diff vs presented diff (may be truncated + excluded files stripped)
+  const rawDiffBytes = Buffer.byteLength(fullDiffOutput, 'utf-8');
+  const shownLines = Math.min(diffLines.length, MAX_DIFF_LINES);
+  const outputBytes = Buffer.byteLength(diffLines.slice(0, shownLines).join('\n'), 'utf-8');
+  // Raw estimate includes excluded files (each might have ~2k diff content)
+  const rawEstimate = rawDiffBytes + excludedCount * 2000;
+  MeterRecorder.recordDiff('git diff', rawEstimate, outputBytes);
+
   console.log('');
 }
 

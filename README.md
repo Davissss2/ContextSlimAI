@@ -12,7 +12,7 @@
   <a href="#installation"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square&logo=node.js" alt="Node Version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
   <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="PRs Welcome" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/version-1.3.0-purple?style=flat-square" alt="Version" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/version-1.5.0-purple?style=flat-square" alt="Version" /></a>
 </p>
 
 <p align="center">
@@ -168,6 +168,39 @@ Lists files and folders, hiding heavy directories. Shows summary counts.
 npx contextslim ls [dir]
 ```
 
+### `imports <file>` — Dependency Extractor ⭐ NEW
+
+Extracts only `import`/`require` statements. Instantly understand dependencies without reading building block logic.
+
+### `outline [dir]` — Full Architecture Scanner ⭐ NEW
+
+Recursive map of ALL source files. Shows the entire codebase architecture in one compact output. Saves ~82% tokens compared to multiple map commands.
+
+### `deps` — Compact Package Viewer ⭐ NEW
+
+Shows project dependencies without version noise or irrelevant metadata. Contains only the packages you need. ~66% smaller than reading a raw `package.json`.
+
+### `head <file> [n]` — Quick Peek ⭐ NEW
+
+Shows the first N lines (default 30) of a file. Best for headers and quick checks.
+
+### `todo [dir]` — Pending Work Finder ⭐ NEW
+
+Finds all `TODO`, `FIXME`, `HACK`, and `BUG` comments across your codebase, grouped by file and sorted by severity.
+
+### `types <file>` — TypeScript Type Extractor ⭐ NEW
+
+Extracts only `interface`, `type`, and `enum` definitions from a file, skipping implementation code. Saves ~81% tokens vs reading the full file.
+
+### `meter` — AI Token Tracker ⭐ NEW
+
+Tracks and visualizes token consumption across sessions and compares AI-optimized context limits against raw context reading.
+```bash
+npx contextslim meter simulate  # Simulate token consumption across project
+npx contextslim meter report    # View token savings
+npx contextslim meter [start|stop|status|history|clear]
+```
+
 ### `scan` — Token Waste Estimator
 
 Calculates how many MB and estimated tokens are wasted by unignored heavy folders.
@@ -261,7 +294,7 @@ Features planned for future releases:
 | Feature | Description | Status |
 |---------|-------------|--------|
 | `contextslim diff` | Show only changes since last commit — saves massive tokens for "fix this bug" flows | ✅ Done |
-| `contextslim deps <file>` | Dependency graph: what a file imports and what imports it | 🔜 Planned |
+| `contextslim deps` | Dependency graph: what a file imports and what imports it | ✅ Done |
 | `contextslim stats` | Real metrics: measure exact token savings during runs | ✅ Done |
 | `.contextslimrc` | Config file to customize limits, exclude patterns, IDEs logic | ✅ Done |
 | Monorepo support | Detect Turborepo/pnpm workspaces and generate context per package | 🔜 Planned |
@@ -288,7 +321,14 @@ contextslim/
 │   │   ├── map.ts                # Zero-token skeleton reader
 │   │   ├── cat.ts                # Optimized file reader
 │   │   ├── grep.ts               # Optimized search
-│   │   └── ls.ts                 # Optimized directory listing
+│   │   ├── ls.ts                 # Optimized directory listing
+│   │   ├── meter.ts              # Token usage tracker
+│   │   ├── outline.ts            # Full codebase architecture
+│   │   ├── imports.ts            # Extract imports only
+│   │   ├── deps.ts               # Compact dependencies
+│   │   ├── head.ts               # First N lines of a file
+│   │   ├── todo.ts               # Find TODO/FIXME comments
+│   │   └── types.ts              # Extract TS types only
 │   ├── analyzers/
 │   │   ├── stack-detector.ts     # 20+ stack/framework detection
 │   │   └── project-context.ts    # Entry point + mini-tree generator

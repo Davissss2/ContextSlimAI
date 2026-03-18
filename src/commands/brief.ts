@@ -2,6 +2,7 @@ import { basename, resolve } from 'node:path';
 import chalk from 'chalk';
 import { detectStack, StackInfo } from '../analyzers/stack-detector.js';
 import { detectEntryPoints, generateMiniTree } from '../analyzers/project-context.js';
+import { MeterRecorder } from '../meter/recorder.js';
 
 export async function generateBriefText(targetDir: string, stack: StackInfo): Promise<string> {
   const projectName = basename(targetDir);
@@ -71,4 +72,8 @@ export async function briefCommand(dir?: string): Promise<void> {
       chalk.gray(' — copy and paste this into any AI conversation for instant context'),
   );
   console.log('');
+
+  // Record: a naive AI would need to read all project files; brief compresses to ~300 tokens
+  const briefBytes = Buffer.byteLength(brief, 'utf-8');
+  MeterRecorder.recordBrief(targetDir, briefBytes * 20, briefBytes); // brief is ~20x smaller than reading everything
 }

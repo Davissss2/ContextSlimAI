@@ -10,6 +10,13 @@ import { grepCommand } from './commands/grep.js';
 import { mapCommand } from './commands/map.js';
 import { treeCommand } from './commands/tree.js';
 import { briefCommand } from './commands/brief.js';
+import { meterCommand } from './commands/meter.js';
+import { importsCommand } from './commands/imports.js';
+import { outlineCommand } from './commands/outline.js';
+import { depsCommand } from './commands/deps.js';
+import { headCommand } from './commands/head.js';
+import { todoCommand } from './commands/todo.js';
+import { typesCommand } from './commands/types.js';
 
 const program = new Command();
 
@@ -18,7 +25,7 @@ program
   .description(
     '⚡ CLI tool to optimize AI IDE token consumption — auto-generates exclusion files & AI rules',
   )
-  .version('1.3.0');
+  .version('1.5.0');
 
 program
   .command('init')
@@ -150,6 +157,90 @@ program
       await briefCommand(dir);
     } catch (error) {
       console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('meter [action]')
+  .description('Track and visualize AI token consumption (start|stop|status|simulate|report|history|clear)')
+  .action(async (action) => {
+    try {
+      await meterCommand(action);
+    } catch (error) {
+      console.error('\n❌ An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('imports <file>')
+  .description('Extract only import/require statements from a file — see dependencies instantly')
+  .action(async (file) => {
+    try {
+      await importsCommand(file);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('outline [dir]')
+  .description('Recursive map of all source files — full codebase architecture in one command')
+  .action(async (dir) => {
+    try {
+      await outlineCommand(dir);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('deps')
+  .description('Show project dependencies in compact format — no version noise')
+  .action(async () => {
+    try {
+      await depsCommand();
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('head <file> [lines]')
+  .description('Show the first N lines of a file (default: 30) — quick peek at imports and headers')
+  .action(async (file, lines) => {
+    try {
+      await headCommand(file, lines);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('todo [dir]')
+  .description('Find all TODO/FIXME/HACK/BUG comments — instant context about pending work')
+  .action(async (dir) => {
+    try {
+      await todoCommand(dir);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('types <file>')
+  .description('Extract TypeScript type definitions — interfaces, types, and enums only')
+  .action(async (file) => {
+    try {
+      await typesCommand(file);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
       process.exit(1);
     }
   });

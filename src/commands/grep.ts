@@ -2,6 +2,7 @@ import { stat, readdir, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import chalk from 'chalk';
 import { ConfigManager } from '../utils/config.js';
+import { MeterRecorder } from '../meter/recorder.js';
 
 const IGNORED_DIRS = new Set([
   'node_modules', '.git', '.next', '.nuxt', 'dist', 'build', 'out', 'coverage', '.cache', 'venv', '.venv', 'target', 'vendor'
@@ -88,5 +89,12 @@ export async function grepCommand(query: string, dirStr?: string): Promise<void>
   if (results.length >= maxResults) {
     console.log(chalk.yellow(`  ⚠️ Stopping at ${maxResults} total matches to save context.`));
   }
+
+  // Record: output is the truncated results, estimate raw as proportionally larger
+  const outputText = results.map(r => `${r.file}:${r.line}: ${r.content}`).join('\n');
+  const outputBytes = Buffer.byteLength(outputText, 'utf-8');
+  const rawEstimate = outputBytes * 3; // grep truncates heavily, raw would be ~3x bigger
+  MeterRecorder.recordGrep(targetDir, rawEstimate, outputBytes);
+
   console.log('');
 }

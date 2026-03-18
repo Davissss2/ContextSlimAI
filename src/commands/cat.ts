@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
 import { ConfigManager } from '../utils/config.js';
+import { MeterRecorder } from '../meter/recorder.js';
 
 export async function catCommand(fileStr: string): Promise<void> {
   const config = ConfigManager.loadConfig();
@@ -28,6 +29,7 @@ export async function catCommand(fileStr: string): Promise<void> {
 
 
     if (meaningfulLines.length <= maxLines) {
+      const outputText = meaningfulLines.join('\n');
       meaningfulLines.forEach((l, i) => {
         console.log(chalk.gray(`${i + 1} | `) + chalk.white(l));
       });
@@ -36,6 +38,7 @@ export async function catCommand(fileStr: string): Promise<void> {
           `\n  (Full file shown. ${blankLinesRemoved} blank lines stripped for context efficiency)\n`
         )
       );
+      MeterRecorder.recordCat(fileStr, Buffer.byteLength(content, 'utf-8'), Buffer.byteLength(outputText, 'utf-8'));
     } else {
       // Print Head
       for (let i = 0; i < headLines; i++) {
@@ -56,11 +59,14 @@ export async function catCommand(fileStr: string): Promise<void> {
         console.log(chalk.gray(`${i + 1} | `) + chalk.white(meaningfulLines[i]));
       }
 
+      const outputLines = [...meaningfulLines.slice(0, headLines), ...meaningfulLines.slice(startIndex)];
+      const outputText = outputLines.join('\n');
       console.log(
         chalk.dim(
           `\n  (File too large. ${blankLinesRemoved} blank lines stripped and middle hidden. Use specialized grep for deeper search)\n`
         )
       );
+      MeterRecorder.recordCat(fileStr, Buffer.byteLength(content, 'utf-8'), Buffer.byteLength(outputText, 'utf-8'));
     }
   } catch (error: any) {
     console.error(chalk.red(`\n❌ Error reading file: ${error.message}\n`));

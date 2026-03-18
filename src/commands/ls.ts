@@ -1,6 +1,7 @@
 import { readdir, stat } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import chalk from 'chalk';
+import { MeterRecorder } from '../meter/recorder.js';
 
 const IGNORED_DIRS = new Set([
   'node_modules',
@@ -46,6 +47,10 @@ export async function lsCommand(dirStr?: string): Promise<void> {
     }
 
     console.log(chalk.dim(`\n  Summary: ${dirsCount} dirs, ${filesCount} files. (${hiddenCount} heavy folders hidden to save tokens)\n`));
+
+    // Record: all items vs shown items
+    const totalItems = dirsCount + filesCount + hiddenCount;
+    MeterRecorder.recordLs(targetDir, totalItems * 50, (dirsCount + filesCount) * 50);
   } catch (error: any) {
     console.error(chalk.red(`\n❌ Error reading directory: ${error.message}\n`));
   }

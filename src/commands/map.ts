@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
+import { MeterRecorder } from '../meter/recorder.js';
 
 export async function mapCommand(fileStr: string): Promise<void> {
   if (!fileStr) {
@@ -48,6 +49,10 @@ export async function mapCommand(fileStr: string): Promise<void> {
     }
 
     console.log(chalk.dim(`\n  (File mapped: Only structural signatures displayed to save massive tokens)\n`));
+
+    // Record: raw file vs compressed signatures output
+    const sigText = signatures.join('\n');
+    MeterRecorder.recordMap(fileStr, Buffer.byteLength(content, 'utf-8'), Buffer.byteLength(sigText, 'utf-8'));
   } catch (error: any) {
     console.error(chalk.red(`\n❌ Error mapping file: ${error.message}\n`));
   }
