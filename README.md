@@ -16,10 +16,20 @@
 </p>
 
 <p align="center">
-  CLI tool that automatically detects your project stack and generates optimized ignore files & AI rules to <b>drastically reduce token consumption</b> in AI-powered IDEs like Antigravity, Cursor, GitHub Copilot, and Claude Code.
+  CLI tool that automatically detects your project stack and generates optimized ignore files, AI rules, and custom terminal wrappers to <b>reduce token consumption by up to 90%</b> in AI-powered IDEs like Antigravity, Cursor, GitHub Copilot, and Claude Code.
 </p>
 
-<br />
+---
+
+## 💸 Stop Burning Your API Budget
+
+When an AI assistant explores your project, a single careless command can burn thousands of tokens instantly. ContextSlim solves this by imposing strict limits and optimized data outputs tailored for LLM consumption.
+
+### **How much do you save?**
+- 📉 **90% Token Reduction** when scanning code structures using `contextslim map` instead of reading full files.
+- 📉 **80% Token Reduction** when searching files using `contextslim grep` (caps matches to 5 per file vs dumping 500+ lines of logs).
+- 📉 **60% Token Reduction** by auto-generating `.gitattributes` to intentionally hide heavy build files from GitHub's AI PR-reviewers and Copilot.
+- 📉 **100% Protection** against fatal context overflows caused by an AI running `cat package-lock.json` or `ls` on `node_modules`.
 
 ---
 
