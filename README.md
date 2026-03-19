@@ -59,7 +59,7 @@ ContextSlim analyzes your project, detects the stack, and auto-generates:
 | `.cursorrules` | AI behavior rules optimized for Cursor AI |
 | `CLAUDE.md` | Context configuration for Claude Code |
 | `.agent/rules/general.md` | **Local** project-specific context for Antigravity (stack, entry points, structure) |
-| `~/.gemini/GEMINI.md` | **Global** ContextSlim command guide for Antigravity |
+| `~/.gemini/antigravity/global_workflows/contextslim_rules.md` | **Global** ContextSlim command guide for Antigravity |
 | `.github/copilot-instructions.md` | Specific instructions for GitHub Copilot |
 | `.gitattributes` | Prevents large auto-generated files from cluttering GitHub PRs |
 
@@ -93,7 +93,7 @@ npx contextslim init
 ```
 
 **Generates:**
-- **Global rules** (Antigravity): how to use ContextSlim commands, safe editing, progressive context, file type strategies
+    • Global Antigravity Rules (~/.gemini/antigravity/global_workflows/contextslim_rules.md)
 - **Local rules** (`.agent/rules/general.md`): detected stack, entry points, mini-tree of your project, coding conventions
 - Ignore files for Antigravity, Cursor, Copilot, Claude
 
@@ -264,7 +264,7 @@ ContextSlim auto-detects **20+ stacks and frameworks**:
 
 ContextSlim generates a **two-layer rules system** for Antigravity:
 
-### Global Rules (`~/.gemini/GEMINI.md`)
+### Global Rules (`~/.gemini/antigravity/global_workflows/contextslim_rules.md`)
 Teaches the AI **how to use ContextSlim** and best practices:
 
 - **Progressive Context** — Always escalate: `tree` → `map` → `view_file` (specific lines) → `view_file` (full)
@@ -301,7 +301,9 @@ your-project/
 ├── .github/
 │   └── copilot-instructions.md      # Rules for Copilot
 └── ~/.gemini/
-    └── GEMINI.md                    # Global ContextSlim command guide
+    └── antigravity/
+        └── global_workflows/
+            └── contextslim_rules.md         # Global ContextSlim command guide
 ```
 
 ---
