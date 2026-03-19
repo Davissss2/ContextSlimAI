@@ -16,11 +16,24 @@ Entry points: src/index.ts (Main entry)
 Structure:
   ├── assets/
   ├── bin/
+  │   └── contextslim.js
   ├── src/
   │   ├── analyzers/
+  │   │   ├── project-context.ts
+  │   │   └── stack-detector.ts
   │   ├── commands/
-  │   ├── generators/
-  │   ├── utils/
+  │   │   ├── brief.ts
+  │   │   ├── cat.ts
+  │   │   ├── dbdiff.ts
+  │   │   ├── dbquery.ts
+  │   │   ├── dbsample.ts
+  │   │   ├── dbschema.ts
+  │   │   ├── dbstats.ts
+  │   │   ├── deps.ts
+  │   │   ├── diff.ts
+  │   │   ├── doctor.ts
+  │   │   ├── envinfo.ts
+  │   │   ├── grep.ts
 Config files: package.json, tsconfig.json
 ```
 

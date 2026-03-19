@@ -17,6 +17,19 @@ import { depsCommand } from './commands/deps.js';
 import { headCommand } from './commands/head.js';
 import { todoCommand } from './commands/todo.js';
 import { typesCommand } from './commands/types.js';
+// Windows & System commands
+import { sysinfoCommand } from './commands/sysinfo.js';
+import { procsCommand } from './commands/procs.js';
+import { servicesCommand } from './commands/services.js';
+import { netinfoCommand } from './commands/netinfo.js';
+import { envinfoCommand } from './commands/envinfo.js';
+import { registryCommand } from './commands/registry.js';
+// Database commands
+import { dbschemaCommand } from './commands/dbschema.js';
+import { dbqueryCommand } from './commands/dbquery.js';
+import { dbsampleCommand } from './commands/dbsample.js';
+import { dbstatsCommand } from './commands/dbstats.js';
+import { dbdiffCommand } from './commands/dbdiff.js';
 
 const program = new Command();
 
@@ -25,7 +38,7 @@ program
   .description(
     '⚡ CLI tool to optimize AI IDE token consumption — auto-generates exclusion files & AI rules',
   )
-  .version('1.5.0');
+  .version('1.6.0');
 
 program
   .command('init')
@@ -245,4 +258,145 @@ program
     }
   });
 
+// ═══════════════════════════════════════════
+// 🖥️  SYSTEM / WINDOWS COMMANDS
+// ═══════════════════════════════════════════
+
+program
+  .command('sysinfo')
+  .description('Compact system info — replaces verbose systeminfo/uname (~90% token savings)')
+  .action(async () => {
+    try {
+      await sysinfoCommand();
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('procs [filter]')
+  .description('Compact process list — replaces tasklist/Get-Process/ps aux (sorted by memory)')
+  .action(async (filter) => {
+    try {
+      await procsCommand(filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('services [filter]')
+  .description('Compact service list — replaces Get-Service/systemctl (grouped by status)')
+  .action(async (filter) => {
+    try {
+      await servicesCommand(filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('netinfo')
+  .description('Compact network info — replaces ipconfig/all + netstat (~90% token savings)')
+  .action(async () => {
+    try {
+      await netinfoCommand();
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('envinfo [filter]')
+  .description('Environment variables — grouped by category, sensitive vars hidden')
+  .action(async (filter) => {
+    try {
+      await envinfoCommand(filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('registry <path>')
+  .description('Compact Windows Registry reader — replaces verbose reg query (Windows only)')
+  .action(async (regPath) => {
+    try {
+      await registryCommand(regPath);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+// ═══════════════════════════════════════════
+// 🗄️  DATABASE COMMANDS
+// ═══════════════════════════════════════════
+
+program
+  .command('dbschema <connection> [filter]')
+  .description('Compact DB schema — tables, columns, indexes in tree format. Use [filter] to match specific tables.')
+  .action(async (connection, filter) => {
+    try {
+      await dbschemaCommand(connection, filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('dbquery <queryOrFile> [connection]')
+  .description('Execute SQL with token-optimized output — limits rows, truncates columns')
+  .action(async (queryOrFile, connection) => {
+    try {
+      await dbqueryCommand(queryOrFile, connection);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('dbsample <table> [connection]')
+  .description('Quick table data preview — show sample rows without writing queries')
+  .action(async (table, connection) => {
+    try {
+      await dbsampleCommand(table, connection);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('dbstats <connection> [filter]')
+  .description('Compact DB statistics — table sizes, row counts, index stats in ~20 lines')
+  .action(async (connection, filter) => {
+    try {
+      await dbstatsCommand(connection, filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('dbdiff <file1> [file2]')
+  .description('Compare two schema dumps — show only table/column changes')
+  .action(async (file1, file2) => {
+    try {
+      await dbdiffCommand(file1, file2);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
 program.parse();
+

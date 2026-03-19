@@ -11,6 +11,10 @@ export interface ContextSlimConfig {
     catLines: number;
     grepMatches: number;
     treeDepth: number;
+    dbSampleRows: number;
+    dbMaxColumns: number;
+    procsLimit: number;
+    servicesLimit: number;
   };
   patterns: {
     alwaysInclude: string[];
@@ -28,6 +32,10 @@ export const DEFAULT_CONFIG: ContextSlimConfig = {
     catLines: 500,
     grepMatches: 20,
     treeDepth: 3,
+    dbSampleRows: 5,
+    dbMaxColumns: 20,
+    procsLimit: 30,
+    servicesLimit: 30,
   },
   patterns: {
     alwaysInclude: [],

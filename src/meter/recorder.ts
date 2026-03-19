@@ -98,4 +98,11 @@ export class MeterRecorder {
     const event = TokenCounter.createEvent(type, source, rawBytes, outputBytes);
     SessionStore.addEvent(event);
   }
+
+  /**
+   * Convenience alias for recording any command event by name
+   */
+  static recordCommand(commandName: TokenEvent['type'], rawBytes: number, outputBytes: number): void {
+    MeterRecorder.record(commandName, commandName, rawBytes, outputBytes);
+  }
 }

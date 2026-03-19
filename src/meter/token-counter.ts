@@ -6,7 +6,7 @@
 
 export interface TokenEvent {
   timestamp: string;
-  type: 'file_read' | 'command_output' | 'tree' | 'map' | 'grep' | 'cat' | 'ls' | 'diff' | 'brief';
+  type: 'file_read' | 'command_output' | 'tree' | 'map' | 'grep' | 'cat' | 'ls' | 'diff' | 'brief' | 'sysinfo' | 'procs' | 'services' | 'netinfo' | 'envinfo' | 'registry' | 'dbschema' | 'dbquery' | 'dbsample' | 'dbstats' | 'dbdiff';
   source: string;          // file path or command name
   rawBytes: number;
   tokens: number;

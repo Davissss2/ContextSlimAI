@@ -12,7 +12,7 @@
   <a href="#installation"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square&logo=node.js" alt="Node Version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
   <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="PRs Welcome" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/version-1.5.0-purple?style=flat-square" alt="Version" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/version-1.6.0-purple?style=flat-square" alt="Version" /></a>
 </p>
 
 <p align="center">
@@ -200,6 +200,25 @@ npx contextslim meter simulate  # Simulate token consumption across project
 npx contextslim meter report    # View token savings
 npx contextslim meter [start|stop|status|history|clear]
 ```
+
+### 🖥️ OS & System Optimization Commands ⭐ NEW
+
+Replace verbose native OS commands with token-optimized wrappers that save up to 90% tokens:
+- `sysinfo` — Compact system info replacing `systeminfo` / `uname`
+- `procs [filter]` — Compact sorted process list replacing `tasklist` / `ps aux`
+- `services [filter]` — Compact service list replacing `Get-Service` / `systemctl`
+- `netinfo` — Compact network info replacing `ipconfig /all` / `ifconfig` + `netstat`
+- `envinfo [filter]` — Safe environment variables grouped by category, hiding sensitive tokens.
+- `registry <path>` — Compact Windows Registry reader (Windows only)
+
+### 🗄️ Database Optimization Commands ⭐ NEW
+
+Examine databases without dumping thousands of tokens to the AI context:
+- `dbschema <connection> [filter]` — Returns a compact tree of tables, columns, and indexes. Much smaller than `SHOW CREATE TABLE`.
+- `dbquery <queryOrFile> [conn]` — Executes SQL but truncates wide columns and limits outputs.
+- `dbsample <table> [conn]` — Quickly preview table rows without writing manual queries.
+- `dbstats <conn> [filter]` — Displays row counts, table sizes, and index sizes in a compact 20-line table.
+- `dbdiff <file1> [file2]` — Compare two SQL dumps, showing ONLY the modified tables and columns.
 
 ### `scan` — Token Waste Estimator
 
