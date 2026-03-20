@@ -278,6 +278,7 @@ function getAntigravityRules(stack: StackInfo): string {
     '- NEVER use `contextslim cat` for files <50 lines — use `view_file`.',
     '- NEVER use raw `tree` or `ls -R` in terminal — use `contextslim tree`.',
     '- NEVER read the full file when `map` answers the question.',
+    '- NEVER run `pm2 restart` or `node` servers in terminal without `--silent` or `> /dev/null 2>&1` (massive logs burn tokens).',
     '',
 
     // ── Smart Search ────────────────────────────────────────────

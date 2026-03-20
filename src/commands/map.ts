@@ -14,10 +14,15 @@ export async function mapCommand(fileStr: string): Promise<void> {
   const maxLineWidth = config.limits.maxLineWidth;
   const targetFile = resolve(process.cwd(), fileStr);
   
-  // Only match top-level declarations (0-2 spaces indent = module level)
-  const signatureRegex = /^(\s{0,2})(?:export\s+)?(?:async\s+)?(?:function|class|interface|type|enum)\s/;
-  // For const/let, only match exports or top-level (not local vars)
-  const constRegex = /^(?:export\s+)(?:const|let)\s/;
+  // Match functions, classes, interfaces, types, enums
+  const signatureRegex = /^(\s{0,2})(?:export\s+(?:default\s+)?)?(?:async\s+)?(?:function|class|interface|type|enum)\s/;
+  
+  // Match constant/let declarations (often used for React components or config)
+  // We want: export const, or top-level const that defines an arrow function/array/object
+  const constRegex = /^(?:export\s+(?:default\s+)?)?(?:const|let)\s+([a-zA-Z0-9_]+)\s*=/;
+  
+  // Match export default identifier
+  const defaultExportRegex = /^export\s+default\s+[a-zA-Z0-9_]+/;
 
   try {
     const content = await readFile(targetFile, 'utf-8');
@@ -25,17 +30,23 @@ export async function mapCommand(fileStr: string): Promise<void> {
     const signatures: string[] = [];
 
     for (const line of lines) {
-      const trimmed = line.trim();
-      if (signatureRegex.test(line) || constRegex.test(trimmed)) {
-        // Find opening brace and cut it off to keep just the signature
-        const braceIndex = line.indexOf('{');
-        let sig: string;
-        if (braceIndex !== -1) {
-          sig = line.substring(0, braceIndex).trim();
-        } else {
-          sig = trimmed;
+      if (signatureRegex.test(line) || constRegex.test(line) || defaultExportRegex.test(line)) {
+        // Find opening brace or equals sign and clean it
+        let sig = line.trim();
+        const braceIndex = sig.indexOf('{');
+        const arrowIndex = sig.indexOf('=>');
+        
+        if (braceIndex !== -1 && (arrowIndex === -1 || braceIndex < arrowIndex)) {
+          sig = sig.substring(0, braceIndex).trim();
+        } else if (arrowIndex !== -1 && sig.endsWith('{')) {
+          sig = sig.replace(/\{\s*$/, '').trim();
         }
-        // Truncate long signatures
+
+        // Clean up exported arrays/objects that start on this line
+        if (sig.endsWith('[') || sig.endsWith('{')) {
+          sig = sig.substring(0, sig.length - 1).trim();
+        }
+
         if (sig.length > maxLineWidth) {
           sig = sig.substring(0, maxLineWidth) + '…';
         }

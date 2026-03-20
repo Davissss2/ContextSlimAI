@@ -26,8 +26,9 @@ const CODE_EXTENSIONS = new Set([
   '.vue', '.svelte', '.astro',
 ]);
 
-const SIGNATURE_REGEX = /^(\s{0,2})(?:export\s+)?(?:async\s+)?(?:function|class|interface|type|enum|struct|impl|def|fn|pub\s+fn|pub\s+struct|pub\s+enum|func)\s/;
-const EXPORT_CONST_REGEX = /^(?:export\s+)(?:const|let)\s/;
+const SIGNATURE_REGEX = /^(\s{0,2})(?:export\s+(?:default\s+)?)?(?:async\s+)?(?:function|class|interface|type|enum|struct|impl|def|fn|pub\s+fn|pub\s+struct|pub\s+enum|func)\s/;
+const EXPORT_CONST_REGEX = /^(?:export\s+(?:default\s+)?)?(?:const|let)\s+([a-zA-Z0-9_]+)\s*=/;
+const DEFAULT_EXPORT_REGEX = /^export\s+default\s+[a-zA-Z0-9_]+/;
 
 interface FileOutline {
   path: string;
@@ -42,16 +43,21 @@ async function extractSignatures(filePath: string): Promise<FileOutline | null> 
     const signatures: string[] = [];
 
     for (const line of lines) {
-      const trimmed = line.trim();
-      if (SIGNATURE_REGEX.test(line) || EXPORT_CONST_REGEX.test(trimmed)) {
-        const braceIndex = line.indexOf('{');
-        let sig: string;
-        if (braceIndex !== -1) {
-          sig = line.substring(0, braceIndex).trim();
-        } else {
-          sig = trimmed;
+      if (SIGNATURE_REGEX.test(line) || EXPORT_CONST_REGEX.test(line) || DEFAULT_EXPORT_REGEX.test(line)) {
+        let sig = line.trim();
+        const braceIndex = sig.indexOf('{');
+        const arrowIndex = sig.indexOf('=>');
+        
+        if (braceIndex !== -1 && (arrowIndex === -1 || braceIndex < arrowIndex)) {
+          sig = sig.substring(0, braceIndex).trim();
+        } else if (arrowIndex !== -1 && sig.endsWith('{')) {
+          sig = sig.replace(/\{\s*$/, '').trim();
         }
-        // Truncate long signatures
+
+        if (sig.endsWith('[') || sig.endsWith('{')) {
+          sig = sig.substring(0, sig.length - 1).trim();
+        }
+
         if (sig.length > 120) {
           sig = sig.substring(0, 120) + '…';
         }
