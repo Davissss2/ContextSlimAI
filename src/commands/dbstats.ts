@@ -77,7 +77,10 @@ async function sqliteStats(dbPath: string, filter?: string): Promise<void> {
   let totalRows = 0;
   const rawLines: string[] = [];
 
-  for (const table of tableNames) {
+  const MAX_TABLES_SHOWN = 30;
+  const tablesToShow = tableNames.slice(0, MAX_TABLES_SHOWN);
+
+  for (const table of tablesToShow) {
     let rowCount = 0;
     let colCount = 0;
 
@@ -104,6 +107,10 @@ async function sqliteStats(dbPath: string, filter?: string): Promise<void> {
     const line = `  ${chalk.white(table.padEnd(25))}${rowColor(formatCount(rowCount).padStart(9).padEnd(11))}${chalk.dim(String(colCount))}`;
     console.log(line);
     rawLines.push(line);
+  }
+
+  if (tableNames.length > MAX_TABLES_SHOWN) {
+    console.log(chalk.gray(`  ... +${tableNames.length - MAX_TABLES_SHOWN} more tables (use filter to narrow)`));
   }
 
   console.log(chalk.dim(`\n  Total: ${formatCount(totalRows)} rows across ${tableNames.length} tables`));
@@ -154,7 +161,10 @@ async function mysqlStats(connection: string, filter?: string): Promise<void> {
   let totalRows = 0;
   let totalData = 0;
 
-  for (const line of lines) {
+  const MAX_TABLES_SHOWN = 30;
+  const linesToShow = lines.slice(0, MAX_TABLES_SHOWN);
+
+  for (const line of linesToShow) {
     const parts = line.split('\t');
     const table = parts[0] || '?';
     const rows = parseInt(parts[1]) || 0;
@@ -170,6 +180,10 @@ async function mysqlStats(connection: string, filter?: string): Promise<void> {
       `${chalk.yellow(formatBytes(dataLen).padStart(9).padEnd(11))}` +
       `${chalk.dim(formatBytes(idxLen))}`,
     );
+  }
+
+  if (lines.length > MAX_TABLES_SHOWN) {
+    console.log(chalk.gray(`  ... +${lines.length - MAX_TABLES_SHOWN} more tables (use filter keyword to narrow down)`));
   }
 
   console.log(chalk.dim(`\n  Total: ${formatCount(totalRows)} rows, ${formatBytes(totalData)} data\n`));
@@ -205,7 +219,10 @@ async function postgresStats(connection: string, filter?: string): Promise<void>
   console.log(chalk.dim('  TABLE                    ROWS       DATA       INDEX'));
   console.log(chalk.dim('  ──────────────────────── ────────── ────────── ──────────'));
 
-  for (const line of lines) {
+  const MAX_TABLES_SHOWN = 30;
+  const linesToShow = lines.slice(0, MAX_TABLES_SHOWN);
+
+  for (const line of linesToShow) {
     const parts = line.split('|').map((p) => p.trim());
     const table = parts[0] || '?';
     const rows = parseInt(parts[1]) || 0;
@@ -218,6 +235,10 @@ async function postgresStats(connection: string, filter?: string): Promise<void>
       `${chalk.yellow(formatBytes(dataLen).padStart(9).padEnd(11))}` +
       `${chalk.dim(formatBytes(idxLen))}`,
     );
+  }
+
+  if (lines.length > MAX_TABLES_SHOWN) {
+    console.log(chalk.gray(`  ... +${lines.length - MAX_TABLES_SHOWN} more tables (use filter keyword to narrow down)`));
   }
 
   console.log('');

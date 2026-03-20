@@ -73,8 +73,10 @@ async function sqliteSchema(dbPath: string, filter?: string): Promise<void> {
   }
 
   const tables: TableInfo[] = [];
+  const MAX_TABLES_SHOWN = 15;
+  const tablesToShow = tableNames.slice(0, MAX_TABLES_SHOWN);
 
-  for (const tableName of tableNames) {
+  for (const tableName of tablesToShow) {
     // Get column info
     const pragmaOutput = await runCommand(
       `sqlite3 "${dbPath}" "PRAGMA table_info(${tableName});"`,
@@ -136,7 +138,11 @@ async function sqliteSchema(dbPath: string, filter?: string): Promise<void> {
     );
   } catch { schema.version = '?'; }
 
-  const output = formatSchemaCompact(schema);
+  let output = formatSchemaCompact(schema);
+  if (tableNames.length > MAX_TABLES_SHOWN) {
+    output += `\n   ... +${tableNames.length - MAX_TABLES_SHOWN} more tables (use filter keyword to narrow down)\n`;
+  }
+  
   console.log(output);
 
   const rawEstimate = tables.length * 500; // DESCRIBE per table ~500 bytes
@@ -173,8 +179,10 @@ async function mysqlSchema(connection: string, filter?: string): Promise<void> {
   }
 
   const tables: TableInfo[] = [];
+  const MAX_TABLES_SHOWN = 15;
+  const tablesToShow = tableNames.slice(0, MAX_TABLES_SHOWN);
 
-  for (const tableName of tableNames) {
+  for (const tableName of tablesToShow) {
     const descOutput = await runCommand(
       `mysql ${connArgs} -e "DESCRIBE ${tableName};" -t`,
       { shell: isWindows() ? 'cmd.exe' : '/bin/sh' },
@@ -231,7 +239,11 @@ async function mysqlSchema(connection: string, filter?: string): Promise<void> {
     )).trim();
   } catch { schema.version = '?'; }
 
-  const output = formatSchemaCompact(schema);
+  let output = formatSchemaCompact(schema);
+  if (tableNames.length > MAX_TABLES_SHOWN) {
+    output += `\n   ... +${tableNames.length - MAX_TABLES_SHOWN} more tables (use filter keyword to narrow down)\n`;
+  }
+
   console.log(output);
 
   const rawEstimate = tables.length * 800;
@@ -264,8 +276,10 @@ async function postgresSchema(connection: string, filter?: string): Promise<void
   }
 
   const tables: TableInfo[] = [];
+  const MAX_TABLES_SHOWN = 15;
+  const tablesToShow = tableNames.slice(0, MAX_TABLES_SHOWN);
 
-  for (const tableName of tableNames) {
+  for (const tableName of tablesToShow) {
     const descOutput = await runCommand(
       `psql ${connArgs} -c "\\d ${tableName}" 2>/dev/null || psql ${connArgs} -t -c "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name='${tableName}';"`,
       { shell: isWindows() ? 'cmd.exe' : '/bin/sh' },
@@ -298,7 +312,11 @@ async function postgresSchema(connection: string, filter?: string): Promise<void
     )).trim().split(' ').slice(0, 2).join(' ');
   } catch { schema.version = '?'; }
 
-  const output = formatSchemaCompact(schema);
+  let output = formatSchemaCompact(schema);
+  if (tableNames.length > MAX_TABLES_SHOWN) {
+    output += `\n   ... +${tableNames.length - MAX_TABLES_SHOWN} more tables (use filter keyword to narrow down)\n`;
+  }
+
   console.log(output);
 
   const rawEstimate = tables.length * 800;

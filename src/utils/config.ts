@@ -11,6 +11,8 @@ export interface ContextSlimConfig {
     catLines: number;
     grepMatches: number;
     treeDepth: number;
+    maxLineWidth: number;
+    outlineMaxSigsPerFile: number;
     dbSampleRows: number;
     dbMaxColumns: number;
     procsLimit: number;
@@ -29,9 +31,11 @@ export const DEFAULT_CONFIG: ContextSlimConfig = {
   },
   ides: ['antigravity', 'cursor', 'claude', 'copilot'],
   limits: {
-    catLines: 500,
-    grepMatches: 20,
+    catLines: 150,
+    grepMatches: 5,
     treeDepth: 3,
+    maxLineWidth: 120,
+    outlineMaxSigsPerFile: 15,
     dbSampleRows: 5,
     dbMaxColumns: 20,
     procsLimit: 30,

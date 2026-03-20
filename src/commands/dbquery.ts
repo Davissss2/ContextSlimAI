@@ -90,8 +90,8 @@ export async function dbqueryCommand(queryOrFile: string, connection?: string): 
     }
 
     const compressed = compressQueryOutput(rawOutput, {
-      maxRows,
-      maxColWidth: 40,
+      maxRows: 10,
+      maxColWidth: 30,
       stripBorders: true,
     });
 

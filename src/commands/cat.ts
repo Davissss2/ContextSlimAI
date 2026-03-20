@@ -7,6 +7,7 @@ import { MeterRecorder } from '../meter/recorder.js';
 export async function catCommand(fileStr: string): Promise<void> {
   const config = ConfigManager.loadConfig();
   const maxLines = config.limits.catLines;
+  const maxLineWidth = config.limits.maxLineWidth;
   const headLines = Math.floor(maxLines / 2);
   const tailLines = Math.ceil(maxLines / 2);
 
@@ -31,7 +32,8 @@ export async function catCommand(fileStr: string): Promise<void> {
     if (meaningfulLines.length <= maxLines) {
       const outputText = meaningfulLines.join('\n');
       meaningfulLines.forEach((l, i) => {
-        console.log(chalk.gray(`${i + 1} | `) + chalk.white(l));
+        const display = l.length > maxLineWidth ? l.substring(0, maxLineWidth) + '…' : l;
+        console.log(chalk.gray(`${i + 1} | `) + chalk.white(display));
       });
       console.log(
         chalk.dim(
@@ -42,7 +44,8 @@ export async function catCommand(fileStr: string): Promise<void> {
     } else {
       // Print Head
       for (let i = 0; i < headLines; i++) {
-        console.log(chalk.gray(`${i + 1} | `) + chalk.white(meaningfulLines[i]));
+        const display = meaningfulLines[i].length > maxLineWidth ? meaningfulLines[i].substring(0, maxLineWidth) + '…' : meaningfulLines[i];
+        console.log(chalk.gray(`${i + 1} | `) + chalk.white(display));
       }
 
       // Snip
@@ -56,7 +59,8 @@ export async function catCommand(fileStr: string): Promise<void> {
       // Print Tail
       const startIndex = meaningfulLines.length - tailLines;
       for (let i = startIndex; i < meaningfulLines.length; i++) {
-        console.log(chalk.gray(`${i + 1} | `) + chalk.white(meaningfulLines[i]));
+        const display = meaningfulLines[i].length > maxLineWidth ? meaningfulLines[i].substring(0, maxLineWidth) + '…' : meaningfulLines[i];
+        console.log(chalk.gray(`${i + 1} | `) + chalk.white(display));
       }
 
       const outputLines = [...meaningfulLines.slice(0, headLines), ...meaningfulLines.slice(startIndex)];

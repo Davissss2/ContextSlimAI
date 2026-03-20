@@ -17,6 +17,21 @@ import { depsCommand } from './commands/deps.js';
 import { headCommand } from './commands/head.js';
 import { todoCommand } from './commands/todo.js';
 import { typesCommand } from './commands/types.js';
+import { runCommand } from './commands/run.js';
+import { tailCommand } from './commands/tail.js';
+// Cross-platform utility commands
+import { logsCommand } from './commands/logs.js';
+import { portsCommand } from './commands/ports.js';
+import { diskCommand } from './commands/disk.js';
+import { dockerCommand } from './commands/docker.js';
+import { packagesCommand } from './commands/packages.js';
+import { findfilesCommand } from './commands/findfiles.js';
+// Analysis & debugging commands
+import { changesCommand } from './commands/changes.js';
+import { errorsCommand } from './commands/errors.js';
+import { configCommand } from './commands/config.js';
+import { compareCommand } from './commands/compare.js';
+import { summaryCommand } from './commands/summary.js';
 // Windows & System commands
 import { sysinfoCommand } from './commands/sysinfo.js';
 import { procsCommand } from './commands/procs.js';
@@ -252,6 +267,172 @@ program
   .action(async (file) => {
     try {
       await typesCommand(file);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('run <cmd> [args...]')
+  .option('-t, --timeout <seconds>', 'Kill process if it hangs', '5')
+  .description('Run a command synchronously with an automatic timeout to catch hanging scripts')
+  .action(async (cmd, args, options) => {
+    try {
+      await runCommand(cmd, args, options.timeout);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('tail <file>')
+  .option('-t, --time <seconds>', 'Time to wait for logs in seconds', '2')
+  .description('Tail progressive logs for N seconds, useful to capture pre-crash outputs')
+  .action(async (file, options) => {
+    try {
+      await tailCommand(file, options.time);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+// ═══════════════════════════════════════════
+// 🔧 CROSS-PLATFORM UTILITY COMMANDS
+// ═══════════════════════════════════════════
+
+program
+  .command('logs <file> [lines]')
+  .description('Read last N lines of a log file, stripping timestamps (~70% token savings)')
+  .action(async (file, lines) => {
+    try {
+      await logsCommand(file, lines);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('ports [filter]')
+  .description('Compact open ports list — replaces verbose netstat/ss output (~80% savings)')
+  .action(async (filter) => {
+    try {
+      await portsCommand(filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('disk [dir]')
+  .description('Compact disk usage — replaces verbose df + du output (~85% savings)')
+  .action(async (dir) => {
+    try {
+      await diskCommand(dir);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('docker [filter]')
+  .description('Compact Docker status — containers, images, volumes in one view (~80% savings)')
+  .action(async (filter) => {
+    try {
+      await dockerCommand(filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('packages [filter]')
+  .description('Compact installed packages list — replaces dpkg/rpm/apk verbose output (~90% savings)')
+  .action(async (filter) => {
+    try {
+      await packagesCommand(filter);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('findfiles <pattern> [dir]')
+  .description('AI-optimized find — skips heavy dirs, caps at 30 results')
+  .action(async (pattern, dir) => {
+    try {
+      await findfilesCommand(pattern, dir);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+// ═══════════════════════════════════════════
+// 🔍 ANALYSIS & DEBUGGING COMMANDS
+// ═══════════════════════════════════════════
+
+program
+  .command('changes [count]')
+  .description('Compact git log — last N commits with changed files (~80% savings vs git log)')
+  .action(async (count) => {
+    try {
+      await changesCommand(count);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('errors <file> [maxLines]')
+  .description('Extract only error/warning lines from a log file (~99% savings)')
+  .action(async (file, maxLines) => {
+    try {
+      await errorsCommand(file, maxLines);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('config <file>')
+  .description('Read config file stripping comments and blank lines (~80% savings)')
+  .action(async (file) => {
+    try {
+      await configCommand(file);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('compare <file1> <file2>')
+  .description('Compact diff between two files — shows only differences')
+  .action(async (file1, file2) => {
+    try {
+      await compareCommand(file1, file2);
+    } catch (error) {
+      console.error('\n\u274c An unexpected error occurred:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('summary <file>')
+  .description('Structured file summary — imports, exports, functions, size (~95% savings)')
+  .action(async (file) => {
+    try {
+      await summaryCommand(file);
     } catch (error) {
       console.error('\n\u274c An unexpected error occurred:', error);
       process.exit(1);

@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import chalk from 'chalk';
 import { MeterRecorder } from '../meter/recorder.js';
+import { ConfigManager } from '../utils/config.js';
 
 export async function mapCommand(fileStr: string): Promise<void> {
   if (!fileStr) {
@@ -9,10 +10,14 @@ export async function mapCommand(fileStr: string): Promise<void> {
     return;
   }
 
+  const config = ConfigManager.loadConfig();
+  const maxLineWidth = config.limits.maxLineWidth;
   const targetFile = resolve(process.cwd(), fileStr);
   
-  // Basic RegExp to match function, class, and export signatures.
-  const signatureRegex = /^(?:export\s+)?(?:async\s+)?(?:function|class|interface|type|const)[\s\w<>=:]+/;
+  // Only match top-level declarations (0-2 spaces indent = module level)
+  const signatureRegex = /^(\s{0,2})(?:export\s+)?(?:async\s+)?(?:function|class|interface|type|enum)\s/;
+  // For const/let, only match exports or top-level (not local vars)
+  const constRegex = /^(?:export\s+)(?:const|let)\s/;
 
   try {
     const content = await readFile(targetFile, 'utf-8');
@@ -20,14 +25,21 @@ export async function mapCommand(fileStr: string): Promise<void> {
     const signatures: string[] = [];
 
     for (const line of lines) {
-      if (signatureRegex.test(line.trim())) {
+      const trimmed = line.trim();
+      if (signatureRegex.test(line) || constRegex.test(trimmed)) {
         // Find opening brace and cut it off to keep just the signature
         const braceIndex = line.indexOf('{');
+        let sig: string;
         if (braceIndex !== -1) {
-          signatures.push(line.substring(0, braceIndex).trim());
+          sig = line.substring(0, braceIndex).trim();
         } else {
-          signatures.push(line.trim());
+          sig = trimmed;
         }
+        // Truncate long signatures
+        if (sig.length > maxLineWidth) {
+          sig = sig.substring(0, maxLineWidth) + '…';
+        }
+        signatures.push(sig);
       }
     }
 
@@ -42,13 +54,13 @@ export async function mapCommand(fileStr: string): Promise<void> {
       // Colorize the keywords
       let colored = sig
         .replace(/\b(export|async)\b/g, chalk.cyan('$1'))
-        .replace(/\b(function|class|interface|type)\b/g, chalk.magenta('$1'))
+        .replace(/\b(function|class|interface|type|enum)\b/g, chalk.magenta('$1'))
         .replace(/\b(const|let)\b/g, chalk.blue('$1'));
         
       console.log(`  ${colored}`);
     }
 
-    console.log(chalk.dim(`\n  (File mapped: Only structural signatures displayed to save massive tokens)\n`));
+    console.log(chalk.dim(`\n  (${signatures.length} signatures from ${lines.length} lines)\n`));
 
     // Record: raw file vs compressed signatures output
     const sigText = signatures.join('\n');
@@ -57,3 +69,4 @@ export async function mapCommand(fileStr: string): Promise<void> {
     console.error(chalk.red(`\n❌ Error mapping file: ${error.message}\n`));
   }
 }
+

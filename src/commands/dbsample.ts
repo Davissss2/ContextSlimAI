@@ -84,7 +84,7 @@ export async function dbsampleCommand(table: string, connection?: string): Promi
 
     const compressed = compressQueryOutput(rawOutput, {
       maxRows: sampleRows,
-      maxColWidth: 35,
+      maxColWidth: 30,
     });
 
     console.log(compressed);

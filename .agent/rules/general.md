@@ -24,6 +24,9 @@ Structure:
   │   ├── commands/
   │   │   ├── brief.ts
   │   │   ├── cat.ts
+  │   │   ├── changes.ts
+  │   │   ├── compare.ts
+  │   │   ├── config.ts
   │   │   ├── dbdiff.ts
   │   │   ├── dbquery.ts
   │   │   ├── dbsample.ts
@@ -31,9 +34,6 @@ Structure:
   │   │   ├── dbstats.ts
   │   │   ├── deps.ts
   │   │   ├── diff.ts
-  │   │   ├── doctor.ts
-  │   │   ├── envinfo.ts
-  │   │   ├── grep.ts
 Config files: package.json, tsconfig.json
 ```
 

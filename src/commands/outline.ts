@@ -26,7 +26,8 @@ const CODE_EXTENSIONS = new Set([
   '.vue', '.svelte', '.astro',
 ]);
 
-const SIGNATURE_REGEX = /^(?:export\s+)?(?:async\s+)?(?:function|class|interface|type|const|let|enum|struct|impl|def|fn|pub\s+fn|pub\s+struct|pub\s+enum|func)\s/;
+const SIGNATURE_REGEX = /^(\s{0,2})(?:export\s+)?(?:async\s+)?(?:function|class|interface|type|enum|struct|impl|def|fn|pub\s+fn|pub\s+struct|pub\s+enum|func)\s/;
+const EXPORT_CONST_REGEX = /^(?:export\s+)(?:const|let)\s/;
 
 interface FileOutline {
   path: string;
@@ -41,13 +42,20 @@ async function extractSignatures(filePath: string): Promise<FileOutline | null> 
     const signatures: string[] = [];
 
     for (const line of lines) {
-      if (SIGNATURE_REGEX.test(line.trim())) {
+      const trimmed = line.trim();
+      if (SIGNATURE_REGEX.test(line) || EXPORT_CONST_REGEX.test(trimmed)) {
         const braceIndex = line.indexOf('{');
+        let sig: string;
         if (braceIndex !== -1) {
-          signatures.push(line.substring(0, braceIndex).trim());
+          sig = line.substring(0, braceIndex).trim();
         } else {
-          signatures.push(line.trim());
+          sig = trimmed;
         }
+        // Truncate long signatures
+        if (sig.length > 120) {
+          sig = sig.substring(0, 120) + '…';
+        }
+        signatures.push(sig);
       }
     }
 
@@ -92,6 +100,8 @@ async function walkForOutline(dir: string, outlines: FileOutline[]): Promise<voi
 }
 
 export async function outlineCommand(dirStr?: string): Promise<void> {
+  const config = ConfigManager.loadConfig();
+  const maxSigsPerFile = config.limits.outlineMaxSigsPerFile;
   const targetDir = resolve(process.cwd(), dirStr || '.');
 
   console.log(chalk.bold.hex('#7C3AED')(`\n  🏗️  ContextSlim OUTLINE\n`));
@@ -111,7 +121,7 @@ export async function outlineCommand(dirStr?: string): Promise<void> {
   let totalOutputLines = 0;
   const outputParts: string[] = [];
 
-  for (const file of outlines) {
+    for (const file of outlines) {
     const relPath = relative(targetDir, file.path);
     totalRawBytes += file.rawBytes;
 
@@ -119,7 +129,8 @@ export async function outlineCommand(dirStr?: string): Promise<void> {
     console.log(chalk.cyan.bold(`  ${header}`));
     outputParts.push(header);
 
-    for (const sig of file.signatures) {
+    const sigsToShow = file.signatures.slice(0, maxSigsPerFile);
+    for (const sig of sigsToShow) {
       const colored = sig
         .replace(/\b(export|async)\b/g, chalk.cyan('$1'))
         .replace(/\b(function|class|interface|type|enum|struct|impl|def|fn|pub)\b/g, chalk.magenta('$1'))
@@ -128,6 +139,11 @@ export async function outlineCommand(dirStr?: string): Promise<void> {
       console.log(chalk.dim('     ') + colored);
       outputParts.push(`  ${sig}`);
       totalOutputLines++;
+    }
+    if (file.signatures.length > maxSigsPerFile) {
+      const omitted = file.signatures.length - maxSigsPerFile;
+      console.log(chalk.dim(`     ... +${omitted} more signatures`));
+      outputParts.push(`  ... +${omitted} more`);
     }
     console.log('');
   }

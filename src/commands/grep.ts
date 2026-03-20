@@ -75,10 +75,15 @@ export async function grepCommand(query: string, dirStr?: string): Promise<void>
     grouped[r.file].push({ line: r.line, content: r.content });
   }
 
+  const maxLineWidth = config.limits.maxLineWidth;
+
   for (const [file, matches] of Object.entries(grouped)) {
     console.log(chalk.cyan(`  📄 ${file}`));
     for (const m of matches) {
-      console.log(chalk.gray(`     ${m.line} | `) + chalk.white(m.content));
+      const truncated = m.content.length > maxLineWidth
+        ? m.content.substring(0, maxLineWidth) + '…'
+        : m.content;
+      console.log(chalk.gray(`     ${m.line} | `) + chalk.white(truncated));
     }
     if (matches.length === maxMatchesPerFile) {
       console.log(chalk.dim(`     ... [Truncated max matches per file]`));

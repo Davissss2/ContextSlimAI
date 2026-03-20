@@ -132,7 +132,10 @@ export function parseSQLitePragma(output: string): ColumnInfo[] {
  * Format a column info into a compact single-line representation
  */
 export function formatColumnCompact(col: ColumnInfo): string {
-  let result = `${col.name} ${col.type}`;
+  // Truncate long type names
+  let typeName = col.type;
+  if (typeName.length > 20) typeName = typeName.substring(0, 18) + '…';
+  let result = `${col.name} ${typeName}`;
   if (col.key === 'PK') result += ' PK';
   if (col.key === 'UQ') result += ' UQ';
   if (col.key === 'FK') result += ' FK';
@@ -144,27 +147,37 @@ export function formatColumnCompact(col: ColumnInfo): string {
 /**
  * Format an entire table info into compact multi-line output
  */
-export function formatTableCompact(table: TableInfo): string {
+export function formatTableCompact(table: TableInfo, maxCols: number = 20): string {
   const colCount = table.columns.length;
   const rowStr = table.rowCount !== undefined ? `, ~${formatCountShort(table.rowCount)} rows` : '';
   const sizeStr = table.sizeBytes ? `, ${formatBytesShort(table.sizeBytes)}` : '';
 
   let output = `─ ${table.name} (${colCount} cols${rowStr}${sizeStr})\n`;
 
+  // Limit columns shown
+  const colsToShow = table.columns.slice(0, maxCols);
+  const colStrs = colsToShow.map(formatColumnCompact);
+
   // Columns in groups of 3 per line for compact display
-  const colStrs = table.columns.map(formatColumnCompact);
   for (let i = 0; i < colStrs.length; i += 3) {
     const chunk = colStrs.slice(i, i + 3);
     output += `   ${chunk.join(' | ')}\n`;
   }
 
-  // Indexes
+  if (colCount > maxCols) {
+    output += `   ... +${colCount - maxCols} more columns\n`;
+  }
+
+  // Indexes (max 5)
   if (table.indexes.length > 0) {
-    const idxStrs = table.indexes.map((idx) => {
+    const idxsToShow = table.indexes.slice(0, 5);
+    const idxStrs = idxsToShow.map((idx) => {
       const prefix = idx.unique ? 'UQ:' : 'IDX:';
       return `${prefix} ${idx.name}(${idx.columns.join(',')})`;
     });
-    output += `   ${idxStrs.join(', ')}\n`;
+    output += `   ${idxStrs.join(', ')}`;
+    if (table.indexes.length > 5) output += ` +${table.indexes.length - 5} more`;
+    output += '\n';
   }
 
   return output;
@@ -204,8 +217,8 @@ export function compressQueryOutput(rawOutput: string, options?: {
   maxColWidth?: number;
   stripBorders?: boolean;
 }): string {
-  const maxRows = options?.maxRows ?? 20;
-  const maxColWidth = options?.maxColWidth ?? 40;
+  const maxRows = options?.maxRows ?? 10;
+  const maxColWidth = options?.maxColWidth ?? 30;
 
   const lines = rawOutput.split(/\r?\n/).filter((l) => l.trim());
 
@@ -284,7 +297,7 @@ function compactJSON(obj: any, maxDepth = 2, currentDepth = 0): string {
   if (obj === null || obj === undefined) return String(obj);
   if (typeof obj !== 'object') {
     const str = String(obj);
-    return str.length > 50 ? str.substring(0, 49) + '\u2026' : str;
+    return str.length > 35 ? str.substring(0, 34) + '\u2026' : str;
   }
   if (Array.isArray(obj)) {
     if (obj.length === 0) return '[]';
