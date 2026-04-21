@@ -5,6 +5,7 @@ import { detectStack } from '../analyzers/stack-detector.js';
 import { generateIgnoreFiles } from '../generators/ignore-generator.js';
 import { generateRulesFiles } from '../generators/rules-generator.js';
 import { ConfigManager } from '../utils/config.js';
+import { checkbox } from '@inquirer/prompts';
 
 export async function initCommand(): Promise<void> {
   const targetDir = resolve(process.cwd());
@@ -49,6 +50,22 @@ export async function initCommand(): Promise<void> {
     stackSpinner.fail(chalk.red('Failed to detect stack'));
     throw error;
   }
+
+  // Ask for IDEs interactively
+  console.log('');
+  const selectedIdes = await checkbox({
+    message: 'Select the AI IDEs you want to generate context rules for:',
+    choices: [
+      { name: 'Cursor (.cursorrules)', value: 'cursor', checked: config.ides.includes('cursor') },
+      { name: 'Claude Code (CLAUDE.md)', value: 'claude', checked: config.ides.includes('claude') },
+      { name: 'GitHub Copilot (.github/copilot-instructions.md)', value: 'copilot', checked: config.ides.includes('copilot') },
+      { name: 'Antigravity / ContextSlim Global', value: 'antigravity', checked: config.ides.includes('antigravity') },
+    ],
+  });
+
+  config.ides = selectedIdes;
+  ConfigManager.saveConfig(config);
+  console.log('');
 
   // Step 2: Generate ignore files
   const ignoreSpinner = ora({

@@ -79,12 +79,17 @@ export class ConfigManager {
     
     // Only generate if it doesn't already exist
     if (!fs.existsSync(configPath)) {
-      fs.writeFileSync(
-        configPath,
-        JSON.stringify(DEFAULT_CONFIG, null, 2),
-        'utf-8'
-      );
+      this.saveConfig(DEFAULT_CONFIG);
     }
+  }
+
+  static saveConfig(config: ContextSlimConfig): void {
+    const configPath = path.join(process.cwd(), CONFIG_FILENAME);
+    fs.writeFileSync(
+      configPath,
+      JSON.stringify(config, null, 2),
+      'utf-8'
+    );
   }
 
   /**
