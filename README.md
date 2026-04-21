@@ -46,7 +46,7 @@ When an AI assistant explores your project, a single careless command (like `cat
 Start saving tokens instantly with a single command:
 
 ```bash
-npx contextslim init
+contextslim init
 ```
 
 ContextSlim analyzes your project, detects the stack (*out of 20+ supported frameworks*), and auto-generates:
@@ -64,7 +64,7 @@ ContextSlim analyzes your project, detects the stack (*out of 20+ supported fram
 npm install -g contextslim
 
 # Or use directly with npx (no install needed)
-npx contextslim init
+contextslim init
 ```
 
 *Requires Node.js **≥ 18.0.0***
@@ -144,7 +144,7 @@ git clone https://github.com/Davissss2/ContextSlimAI.git
 cd contextslim
 npm install
 npm run build
-npx contextslim brief
+contextslim brief
 ```
 
 <br/>
